@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.AddMessageIdToStepTasks do
+defmodule Singularity.Workflow.Repo.Migrations.AddMessageIdToStepTasks do
   use Ecto.Migration
 
   def change do

@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.CreateFailTaskFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateFailTaskFunction do
   @moduledoc """
   Creates QuantumFlow.fail_task() function for handling task failures.
 
-  Matches QuantumFlow's architecture:
+  Matches Singularity.Workflow's architecture:
   1. Check if run is already failed (no retry allowed)
   2. Determine if task should retry based on attempts_count vs max_attempts
   3. Update task status (queued for retry, or failed permanently)
@@ -126,7 +126,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateFailTaskFunction do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.fail_task(UUID, TEXT, INTEGER, TEXT) IS
-    'Handles task failure with retry logic. Either requeues for retry or marks as permanently failed. Matches QuantumFlow architecture.'
+    'Handles task failure with retry logic. Either requeues for retry or marks as permanently failed. Matches Singularity.Workflow architecture.'
     """)
   end
 

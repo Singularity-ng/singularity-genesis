@@ -3,7 +3,7 @@ defmodule Singularity.Workflow.WorkflowRun do
   Ecto schema for workflow_runs table.
 
   Tracks workflow execution instances - one record per workflow invocation.
-  Matches QuantumFlow's runs table design.
+  Matches Singularity.Workflow's runs table design.
 
   ## State Transition Diagram
 

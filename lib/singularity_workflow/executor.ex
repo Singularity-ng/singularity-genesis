@@ -1,6 +1,6 @@
 defmodule Singularity.Workflow.Executor do
   @moduledoc """
-  Database-driven DAG workflow executor matching QuantumFlow's architecture.
+  Database-driven DAG workflow executor matching Singularity.Workflow's architecture.
 
   ## Overview
 

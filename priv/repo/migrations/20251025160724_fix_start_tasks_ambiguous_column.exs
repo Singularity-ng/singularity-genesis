@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.FixStartTasksAmbiguousColumn do
+defmodule Singularity.Workflow.Repo.Migrations.FixStartTasksAmbiguousColumn do
   @moduledoc """
   Fixes ambiguous column reference in start_tasks() function.
 

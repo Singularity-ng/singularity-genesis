@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.CreateWorkflowStepStates do
+defmodule Singularity.Workflow.Repo.Migrations.CreateWorkflowStepStates do
   @moduledoc """
   Creates workflow_step_states table for tracking step progress within a run.
 
-  Matches QuantumFlow's step_states table design - the coordination layer for DAG execution.
+  Matches Singularity.Workflow's step_states table design - the coordination layer for DAG execution.
   """
   use Ecto.Migration
 

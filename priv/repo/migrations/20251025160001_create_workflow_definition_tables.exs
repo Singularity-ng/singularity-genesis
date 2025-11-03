@@ -1,9 +1,9 @@
-defmodule QuantumFlow.Repo.Migrations.CreateWorkflowDefinitionTables do
+defmodule Singularity.Workflow.Repo.Migrations.CreateWorkflowDefinitionTables do
   @moduledoc """
   Creates tables for storing dynamic workflow definitions.
 
   Enables runtime workflow creation via API (for AI/LLM workflow generation).
-  Matches QuantumFlow's flows, steps, and deps tables.
+  Matches Singularity.Workflow's flows, steps, and deps tables.
 
   Usage:
     - Code-based workflows: Use __workflow_steps__/0 callback (existing)
@@ -18,7 +18,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateWorkflowDefinitionTables do
     create table(:workflows, primary_key: false) do
       add :workflow_slug, :text, primary_key: true, null: false
       add :max_attempts, :integer, null: false, default: 3
-      add :timeout, :integer, null: false, default: 60  # Matches QuantumFlow opt_timeout default
+      add :timeout, :integer, null: false, default: 60  # Matches Singularity.Workflow opt_timeout default
       add :created_at, :utc_datetime, null: false, default: fragment("NOW()")
     end
 

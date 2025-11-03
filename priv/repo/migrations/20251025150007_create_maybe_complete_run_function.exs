@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.CreateMaybeCompleteRunFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateMaybeCompleteRunFunction do
   @moduledoc """
   Creates QuantumFlow.maybe_complete_run() for checking and completing workflow runs.
 
-  Matches QuantumFlow's implementation:
+  Matches Singularity.Workflow's implementation:
   1. Check if all steps are completed (remaining_steps = 0)
   2. If yes, mark run as completed
   3. Aggregate outputs from leaf steps (steps with no dependents) into a flat array
@@ -67,7 +67,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateMaybeCompleteRunFunction do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.maybe_complete_run(UUID) IS
-    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches QuantumFlow implementation.'
+    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches Singularity.Workflow implementation.'
     """)
   end
 

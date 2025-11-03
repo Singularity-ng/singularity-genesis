@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.CreateWorkersTable do
+defmodule Singularity.Workflow.Repo.Migrations.CreateWorkersTable do
   @moduledoc """
   Creates workers table for worker heartbeat tracking.
 
-  Matches QuantumFlow's worker registration and heartbeat system. Workers register
+  Matches Singularity.Workflow's worker registration and heartbeat system. Workers register
   when they start polling and update last_heartbeat_at periodically.
 
   Used for monitoring and debugging worker activity.

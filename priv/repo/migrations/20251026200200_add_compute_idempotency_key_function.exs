@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.AddComputeIdempotencyKeyFunction do
+defmodule Singularity.Workflow.Repo.Migrations.AddComputeIdempotencyKeyFunction do
   @moduledoc """
   Adds a SQL helper function to compute idempotency_key.
 

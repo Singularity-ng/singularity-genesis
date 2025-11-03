@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.CreateStartTasksFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateStartTasksFunction do
   @moduledoc """
   Creates start_tasks() PostgreSQL function for claiming tasks after polling pgmq.
 
-  Matches QuantumFlow's architecture:
+  Matches Singularity.Workflow's architecture:
   1. Receive message IDs from pgmq.read_with_poll()
   2. Mark corresponding tasks as 'started'
   3. Build task input from run input + dependency outputs
@@ -105,7 +105,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateStartTasksFunction do
 
     execute("""
     COMMENT ON FUNCTION start_tasks(TEXT, BIGINT[], TEXT) IS
-    'Claims tasks from pgmq messages, marks as started, builds input from run + dependencies. Matches QuantumFlow architecture.'
+    'Claims tasks from pgmq messages, marks as started, builds input from run + dependencies. Matches Singularity.Workflow architecture.'
     """)
   end
 

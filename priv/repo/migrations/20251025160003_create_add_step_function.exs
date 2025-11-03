@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.CreateAddStepFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateAddStepFunction do
   @moduledoc """
   Creates add_step() function for dynamic step creation.
 
@@ -8,7 +8,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateAddStepFunction do
   - Dependencies exist
 
   Auto-increments step_index for ordering.
-  Matches QuantumFlow's add_step implementation.
+  Matches Singularity.Workflow's add_step implementation.
   """
   use Ecto.Migration
 
@@ -156,7 +156,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateAddStepFunction do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.add_step(TEXT, TEXT, TEXT[], TEXT, INTEGER, INTEGER, INTEGER) IS
-    'Adds step to workflow definition. Validates dependencies and map step constraints. Idempotent. Matches QuantumFlow add_step().'
+    'Adds step to workflow definition. Validates dependencies and map step constraints. Idempotent. Matches Singularity.Workflow add_step().'
     """)
   end
 

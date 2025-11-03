@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.RewriteStartReadyStepsWithPgmq do
+defmodule Singularity.Workflow.Repo.Migrations.RewriteStartReadyStepsWithPgmq do
   @moduledoc """
   Rewrites start_ready_steps() to use pgmq for task coordination.
 
-  Matches QuantumFlow's architecture:
+  Matches Singularity.Workflow's architecture:
   1. Find ready steps (remaining_deps = 0)
   2. Mark as started
   3. Create step_tasks records
@@ -142,7 +142,7 @@ defmodule QuantumFlow.Repo.Migrations.RewriteStartReadyStepsWithPgmq do
 
     execute("""
     COMMENT ON FUNCTION start_ready_steps(UUID) IS
-    'Finds steps with all dependencies completed, marks as started, creates task records, and sends messages to pgmq queue. Matches QuantumFlow architecture.'
+    'Finds steps with all dependencies completed, marks as started, creates task records, and sends messages to pgmq queue. Matches Singularity.Workflow architecture.'
     """)
   end
 

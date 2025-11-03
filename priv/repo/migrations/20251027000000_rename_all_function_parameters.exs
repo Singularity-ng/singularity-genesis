@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.RenameAllFunctionParameters do
+defmodule Singularity.Workflow.Repo.Migrations.RenameAllFunctionParameters do
   @moduledoc """
   Comprehensive fix: Rename ALL parameters in PL/pgSQL functions to use _arg prefix.
 

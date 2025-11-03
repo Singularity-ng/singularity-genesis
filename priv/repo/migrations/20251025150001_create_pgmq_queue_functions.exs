@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.CreatePgmqQueueFunctions do
+defmodule Singularity.Workflow.Repo.Migrations.CreatePgmqQueueFunctions do
   use Ecto.Migration
 
   def up do

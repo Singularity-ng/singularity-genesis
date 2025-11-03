@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.AddIdempotencyKeyToStepTasks do
+defmodule Singularity.Workflow.Repo.Migrations.AddIdempotencyKeyToStepTasks do
   @moduledoc """
   Adds idempotency_key column to workflow_step_tasks table to prevent duplicate task execution.
 

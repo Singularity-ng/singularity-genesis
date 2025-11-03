@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.CreateHtdagTables do
+defmodule Singularity.Workflow.Repo.Migrations.CreateHtdagTables do
   use Ecto.Migration
 
   def change do

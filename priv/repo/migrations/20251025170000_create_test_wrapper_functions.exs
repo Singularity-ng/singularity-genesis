@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.CreateTestWrapperFunctions do
+defmodule Singularity.Workflow.Repo.Migrations.CreateTestWrapperFunctions do
   @moduledoc """
   Creates test wrapper functions for void-returning functions.
 

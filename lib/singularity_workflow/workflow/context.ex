@@ -1,9 +1,9 @@
 defmodule Singularity.Workflow.Workflow.Context do
   @moduledoc """
-  Lightweight workflow context struct used when invoking QuantumFlow workflow
+  Lightweight workflow context struct used when invoking Singularity.Workflow workflow
   steps outside of the orchestration runtime.
 
-  The production QuantumFlow executor builds workflow contexts dynamically as maps
+  The production Singularity.Workflow executor builds workflow contexts dynamically as maps
   that include the original `:input` plus per-step results. Certain parts of
   the umbrella (for example, synchronous code paths that call workflow steps
   directly) still construct a struct to satisfy compile-time references.
@@ -20,7 +20,7 @@ end
 defmodule Singularity.Workflow.WorkflowContext do
   @moduledoc """
   CamelCase alias of `Singularity.Workflow.Workflow.Context` provided for backwards
-  compatibility with modules that still reference the legacy `QuantumFlow`
+  compatibility with modules that still reference the legacy `Singularity.Workflow`
   namespace.
   """
 

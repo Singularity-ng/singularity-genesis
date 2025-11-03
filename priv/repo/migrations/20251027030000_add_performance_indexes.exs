@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.AddPerformanceIndexes do
+defmodule Singularity.Workflow.Repo.Migrations.AddPerformanceIndexes do
   use Ecto.Migration
 
   def change do

@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.AddTypeViolationDetection do
+defmodule Singularity.Workflow.Repo.Migrations.AddTypeViolationDetection do
   @moduledoc """
   Adds type violation detection to complete_task() for map step validation.
 
@@ -9,7 +9,7 @@ defmodule QuantumFlow.Repo.Migrations.AddTypeViolationDetection do
   3. Store violation details in error messages
   4. Prevent further execution
 
-  Matches QuantumFlow's type safety for map steps.
+  Matches Singularity.Workflow's type safety for map steps.
   """
   use Ecto.Migration
 
@@ -236,7 +236,7 @@ defmodule QuantumFlow.Repo.Migrations.AddTypeViolationDetection do
 
     execute("""
     COMMENT ON FUNCTION complete_task(UUID, TEXT, INTEGER, JSONB) IS
-    'Completes task with type violation detection for map steps. Archives pgmq message, cascades to dependencies. Matches QuantumFlow implementation.'
+    'Completes task with type violation detection for map steps. Archives pgmq message, cascades to dependencies. Matches Singularity.Workflow implementation.'
     """)
   end
 

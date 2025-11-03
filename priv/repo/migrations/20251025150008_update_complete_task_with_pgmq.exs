@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.UpdateCompleteTaskWithPgmq do
+defmodule Singularity.Workflow.Repo.Migrations.UpdateCompleteTaskWithPgmq do
   @moduledoc """
   Updates complete_task() to match QuantumFlow's pgmq-integrated implementation.
 
@@ -163,7 +163,7 @@ defmodule QuantumFlow.Repo.Migrations.UpdateCompleteTaskWithPgmq do
 
     execute("""
     COMMENT ON FUNCTION complete_task(UUID, TEXT, INTEGER, JSONB) IS
-    'Marks task as completed, archives pgmq message, cascades to dependencies, and checks run completion. Matches QuantumFlow architecture.'
+    'Marks task as completed, archives pgmq message, cascades to dependencies, and checks run completion. Matches Singularity.Workflow architecture.'
     """)
   end
 

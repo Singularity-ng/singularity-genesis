@@ -1,11 +1,11 @@
-defmodule QuantumFlow.Repo.Migrations.CreateCreateFlowFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateCreateFlowFunction do
   @moduledoc """
   Creates create_flow() function for dynamic workflow initialization.
 
   Creates workflow record + ensures pgmq queue exists.
   Idempotent - can be called multiple times safely.
 
-  Matches QuantumFlow's create_flow implementation.
+  Matches Singularity.Workflow's create_flow implementation.
 
   CRITICAL: This implementation works around a PostgreSQL 17.x parser regression
   that incorrectly flags column references as ambiguous. The bug occurs even
@@ -46,7 +46,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateCreateFlowFunction do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.create_flow(TEXT, INTEGER, INTEGER) IS
-    'Creates workflow definition and ensures pgmq queue exists. Idempotent. Matches QuantumFlow create_flow().'
+    'Creates workflow definition and ensures pgmq queue exists. Idempotent. Matches Singularity.Workflow create_flow().'
     """)
   end
 

@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.CreateCascadeCompleteTasklessStepsFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateCascadeCompleteTasklessStepsFunction do
   @moduledoc """
   Creates the missing cascade_complete_taskless_steps function.
 

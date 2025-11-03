@@ -1,6 +1,6 @@
 defmodule Singularity.Workflow.Messaging do
   @moduledoc """
-  Messaging helpers for publishing QuantumFlow events via PostgreSQL + pgmq.
+  Messaging helpers for publishing Singularity.Workflow events via PostgreSQL + pgmq.
 
   Provides convenience wrappers that resolve the appropriate Ecto repo and
   delegate to `Singularity.Workflow.Notifications` for durable delivery with NOTIFY.

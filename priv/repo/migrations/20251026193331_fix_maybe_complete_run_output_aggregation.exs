@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.FixMaybeCompleteRunOutputAggregation do
+defmodule Singularity.Workflow.Repo.Migrations.FixMaybeCompleteRunOutputAggregation do
   @moduledoc """
   Fixes QuantumFlow.maybe_complete_run() to aggregate leaf step outputs into a flat array
   instead of nested objects.
@@ -82,7 +82,7 @@ defmodule QuantumFlow.Repo.Migrations.FixMaybeCompleteRunOutputAggregation do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.maybe_complete_run(UUID) IS
-    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches QuantumFlow implementation.'
+    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches Singularity.Workflow implementation.'
     """)
   end
 
@@ -145,7 +145,7 @@ defmodule QuantumFlow.Repo.Migrations.FixMaybeCompleteRunOutputAggregation do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.maybe_complete_run(UUID) IS
-    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs. Matches QuantumFlow implementation.'
+    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs. Matches Singularity.Workflow implementation.'
     """)
   end
 end

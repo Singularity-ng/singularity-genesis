@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.CreateSetVtBatchFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateSetVtBatchFunction do
   @moduledoc """
   Creates QuantumFlow.set_vt_batch() for batch visibility timeout updates.
 
-  Matches QuantumFlow's implementation - batch-update visibility timeouts for multiple
+  Matches Singularity.Workflow's implementation - batch-update visibility timeouts for multiple
   messages in one operation. Used by start_tasks() to set task timeouts efficiently.
 
   Note: pgmq extension doesn't provide set_vt_batch natively, so QuantumFlow implements it.
@@ -63,7 +63,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateSetVtBatchFunction do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.set_vt_batch(TEXT, BIGINT[], INTEGER[]) IS
-    'Batch-update visibility timeouts for multiple pgmq messages. Matches QuantumFlow implementation.'
+    'Batch-update visibility timeouts for multiple pgmq messages. Matches Singularity.Workflow implementation.'
     """)
   end
 

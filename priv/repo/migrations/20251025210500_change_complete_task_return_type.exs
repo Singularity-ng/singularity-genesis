@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.ChangeCompleteTaskReturnType do
+defmodule Singularity.Workflow.Repo.Migrations.ChangeCompleteTaskReturnType do
   @moduledoc """
   Changes complete_task() return type from void to INTEGER.
 

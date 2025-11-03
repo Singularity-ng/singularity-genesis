@@ -1,9 +1,9 @@
 defmodule Singularity.Workflow.Workflow do
   @moduledoc """
-  Public API for orchestrating QuantumFlow workflows.
+  Public API for orchestrating Singularity.Workflow workflows.
 
   Provides functions to start, execute, monitor, and gather metrics for
-  database-backed workflows executed by the QuantumFlow runtime. Repositories
+  database-backed workflows executed by the Singularity.Workflow runtime. Repositories
   are resolved automatically from the workflow module's owning OTP
   application, but can also be supplied explicitly via the `:repo` option.
   """
@@ -50,7 +50,7 @@ defmodule Singularity.Workflow.Workflow do
   defdelegate get_parent(workflow_pid), to: RuntimeWorkflow
 
   @doc """
-  Provides the workflow macro for defining QuantumFlow workflows.
+  Provides the workflow macro for defining Singularity.Workflow workflows.
   """
   defmacro __using__(opts \\ []) do
     quote do

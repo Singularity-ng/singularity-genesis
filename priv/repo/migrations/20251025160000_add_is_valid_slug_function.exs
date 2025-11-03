@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.AddIsValidSlugFunction do
+defmodule Singularity.Workflow.Repo.Migrations.AddIsValidSlugFunction do
   @moduledoc """
   Adds is_valid_slug() utility function for slug validation.
 
@@ -8,7 +8,7 @@ defmodule QuantumFlow.Repo.Migrations.AddIsValidSlugFunction do
   - Pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
   - Not reserved words ('run')
 
-  Matches QuantumFlow's validation logic.
+  Matches Singularity.Workflow's validation logic.
   """
   use Ecto.Migration
 
@@ -32,7 +32,7 @@ defmodule QuantumFlow.Repo.Migrations.AddIsValidSlugFunction do
 
     execute("""
     COMMENT ON FUNCTION QuantumFlow.is_valid_slug(TEXT) IS
-    'Validates slug format: not null, 1-128 chars, alphanumeric with underscores, no reserved words. Matches QuantumFlow implementation.'
+    'Validates slug format: not null, 1-128 chars, alphanumeric with underscores, no reserved words. Matches Singularity.Workflow implementation.'
     """)
   end
 

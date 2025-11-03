@@ -14,7 +14,7 @@ defmodule Singularity.Workflow.DAG.RunInitializer do
   5. Call start_ready_steps() to:
      - Mark root steps as 'started'
      - Create workflow_step_tasks records
-     - Send messages to pgmq queue (matches QuantumFlow architecture)
+     - Send messages to pgmq queue (matches Singularity.Workflow architecture)
 
   ## Example
 

@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.FixCompleteTaskSelect do
+defmodule Singularity.Workflow.Repo.Migrations.FixCompleteTaskSelect do
   @moduledoc """
   Fixes "query has no destination for result data" error in complete_task().
 
