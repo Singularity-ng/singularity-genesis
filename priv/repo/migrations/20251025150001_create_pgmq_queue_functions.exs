@@ -2,11 +2,11 @@ defmodule Singularity.Workflow.Repo.Migrations.CreatePgmqQueueFunctions do
   use Ecto.Migration
 
   def up do
-    # Create QuantumFlow schema for custom functions
+    # Create QuantumFlow PostgreSQL schema for custom functions
     execute("CREATE SCHEMA IF NOT EXISTS QuantumFlow;")
 
     # Create read_with_poll function (backport from pgmq 1.5.0)
-    # This matches QuantumFlow's implementation for task polling
+    # This matches Singularity.Workflow's implementation for task polling
     execute("""
     CREATE FUNCTION QuantumFlow.read_with_poll(
       queue_name TEXT,

@@ -44,7 +44,7 @@ defmodule Singularity.Workflow.Repo.Migrations.RenameAllFunctionParameters do
       v_max_attempts := arg_max_attempts;
       v_timeout := arg_timeout;
 
-      -- Validate slug using QuantumFlow schema prefix
+      -- Validate slug using QuantumFlow PostgreSQL schema prefix
       IF NOT QuantumFlow.is_valid_slug(v_workflow_slug) THEN
         RAISE EXCEPTION 'Invalid workflow_slug: %', v_workflow_slug;
       END IF;

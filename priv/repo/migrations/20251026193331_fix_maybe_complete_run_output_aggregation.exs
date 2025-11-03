@@ -134,7 +134,7 @@ defmodule Singularity.Workflow.Repo.Migrations.FixMaybeCompleteRunOutputAggregat
         AND workflow_runs.status != 'completed'
       RETURNING * INTO v_completed_run;
 
-      -- Log completion (optional: would broadcast event in QuantumFlow)
+      -- Log completion (optional: would broadcast event in Singularity.Workflow)
       IF v_completed_run.id IS NOT NULL THEN
         RAISE NOTICE 'Run completed: run_id=%, output=%',
           v_completed_run.id, v_completed_run.output;

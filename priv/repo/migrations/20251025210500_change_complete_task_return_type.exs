@@ -17,7 +17,7 @@ defmodule Singularity.Workflow.Repo.Migrations.ChangeCompleteTaskReturnType do
 
   ## See Also
 
-  - test/QuantumFlow/complete_task_test.exs (lines 14-45) - Detailed explanation
+  - test/singularity_workflow/complete_task_test.exs (lines 14-45) - Detailed explanation
   - https://github.com/elixir-ecto/postgrex/issues/  (Postgrex void return issues)
   """
   use Ecto.Migration

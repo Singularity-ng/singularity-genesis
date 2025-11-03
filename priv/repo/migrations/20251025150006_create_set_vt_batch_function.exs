@@ -5,7 +5,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateSetVtBatchFunction do
   Matches Singularity.Workflow's implementation - batch-update visibility timeouts for multiple
   messages in one operation. Used by start_tasks() to set task timeouts efficiently.
 
-  Note: pgmq extension doesn't provide set_vt_batch natively, so QuantumFlow implements it.
+  Note: pgmq extension doesn't provide set_vt_batch natively, so Singularity.Workflow implements it.
   """
   use Ecto.Migration
 

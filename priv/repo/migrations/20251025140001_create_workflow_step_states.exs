@@ -18,7 +18,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateWorkflowStepStates do
       # Step execution status
       add :status, :string, null: false, default: "created"
 
-      # Counter-based coordination (QuantumFlow's key innovation)
+      # Counter-based coordination (key innovation)
       add :remaining_deps, :integer, null: false, default: 0
       add :remaining_tasks, :integer
       add :initial_tasks, :integer

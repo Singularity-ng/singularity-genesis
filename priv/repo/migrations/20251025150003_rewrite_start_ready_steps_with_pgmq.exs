@@ -8,7 +8,7 @@ defmodule Singularity.Workflow.Repo.Migrations.RewriteStartReadyStepsWithPgmq do
   3. Create step_tasks records
   4. Send messages to pgmq queue
 
-  This is the KEY function for QuantumFlow parity - uses pgmq for work distribution!
+  This is the KEY function for workflow parity - uses pgmq for work distribution!
   """
   use Ecto.Migration
 

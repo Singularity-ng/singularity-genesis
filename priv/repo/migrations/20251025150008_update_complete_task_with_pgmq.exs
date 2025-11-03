@@ -1,6 +1,6 @@
 defmodule Singularity.Workflow.Repo.Migrations.UpdateCompleteTaskWithPgmq do
   @moduledoc """
-  Updates complete_task() to match QuantumFlow's pgmq-integrated implementation.
+  Updates complete_task() to match Singularity.Workflow's pgmq-integrated implementation.
 
   Changes:
   1. Archive pgmq message when task completes
