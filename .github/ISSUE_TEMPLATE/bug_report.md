@@ -29,7 +29,7 @@ What actually happens?
 - Elixir version: (run `elixir --version`)
 - Erlang/OTP version: (run `erl -eval 'erlang:halt(0).'`)
 - PostgreSQL version: (run `psql --version`)
-- QuantumFlow version: 0.1.0
+- Singularity.Workflow version: 1.0.x
 - OS: (e.g., macOS, Ubuntu, etc.)
 
 ## Minimal Code Example
