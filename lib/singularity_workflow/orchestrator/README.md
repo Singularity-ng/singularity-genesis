@@ -1,23 +1,23 @@
-# Orchestrator Integration for quantum_flow
+# Orchestrator Integration for Singularity.Workflow
 
-This directory contains the Orchestrator (formerly HTDAG: Hierarchical Task Directed Acyclic Graph) integration for quantum_flow, enabling goal-driven workflow creation and execution.
+This directory contains the Orchestrator (formerly HTDAG: Hierarchical Task Directed Acyclic Graph) integration for Singularity.Workflow, enabling goal-driven workflow creation and execution.
 
 ## Overview
 
-Orchestrator allows you to describe what you want to achieve (goals) rather than how to achieve it (workflow steps). The system automatically decomposes complex goals into hierarchical task graphs and converts them into executable quantum_flow workflows.
+Orchestrator allows you to describe what you want to achieve (goals) rather than how to achieve it (workflow steps). The system automatically decomposes complex goals into hierarchical task graphs and converts them into executable Singularity.Workflow workflows.
 
 ## Key Components
 
 ### Core Modules
 
-- **`QuantumFlow.Orchestrator`** - Main HTDAG functionality for goal decomposition and workflow creation
-- **`QuantumFlow.OrchestratorNotifications`** - Real-time event broadcasting for HTDAG workflows
-- **`QuantumFlow.WorkflowComposer`** - High-level API for goal-driven workflow composition
-- **`QuantumFlow.OrchestratorOptimizer`** - Workflow optimization based on historical performance data
+- **`Singularity.Workflow.Orchestrator`** - Main HTDAG functionality for goal decomposition and workflow creation
+- **`Singularity.Workflow.OrchestratorNotifications`** - Real-time event broadcasting for HTDAG workflows
+- **`Singularity.Workflow.WorkflowComposer`** - High-level API for goal-driven workflow composition
+- **`Singularity.Workflow.OrchestratorOptimizer`** - Workflow optimization based on historical performance data
 
 ### Example Implementations
 
-- **`QuantumFlow.Orchestrator.ExampleDecomposer`** - Sample decomposer implementations for common workflow types
+- **`Singularity.Workflow.Orchestrator.ExampleDecomposer`** - Sample decomposer implementations for common workflow types
 
 ## Quick Start
 
@@ -52,7 +52,7 @@ step_functions = %{
 ### 3. Compose and Execute Workflow
 
 ```elixir
-{:ok, result} = QuantumFlow.WorkflowComposer.compose_from_goal(
+{:ok, result} = Singularity.Workflow.WorkflowComposer.compose_from_goal(
   "Build user authentication system",
   &MyApp.GoalDecomposer.decompose/1,
   step_functions,
@@ -66,7 +66,7 @@ step_functions = %{
 
 ```elixir
 # Listen for HTDAG events
-{:ok, pid} = QuantumFlow.OrchestratorNotifications.listen("my_workflow", MyApp.Repo)
+{:ok, pid} = Singularity.Workflow.OrchestratorNotifications.listen("my_workflow", MyApp.Repo)
 
 # Handle events
 receive do
@@ -79,7 +79,7 @@ end
 
 ```elixir
 # Optimize workflow based on historical data
-{:ok, optimized_workflow} = QuantumFlow.OrchestratorOptimizer.optimize_workflow(
+{:ok, optimized_workflow} = Singularity.Workflow.OrchestratorOptimizer.optimize_workflow(
   workflow,
   MyApp.Repo,
   optimization_level: :advanced
@@ -90,7 +90,7 @@ end
 
 ```elixir
 # Compose multiple related workflows
-{:ok, results} = QuantumFlow.WorkflowComposer.compose_multiple_workflows(
+{:ok, results} = Singularity.Workflow.WorkflowComposer.compose_multiple_workflows(
   "Build complete microservices platform",
   &MyApp.GoalDecomposer.decompose_complex/1,
   step_functions,
@@ -124,14 +124,14 @@ Events ← Notifications ← Task Events ← Workflow Events ← Execution Event
 5. **Flexible**: Works with any decomposer function
 6. **Scalable**: Supports complex hierarchical workflows
 
-## Integration with quantum_flow
+## Integration with Singularity.Workflow
 
-HTDAG seamlessly integrates with quantum_flow's existing features:
+HTDAG seamlessly integrates with Singularity.Workflow's existing features:
 
-- **Workflow Execution**: Uses `QuantumFlow.Executor` for workflow execution
-- **Dynamic Workflows**: Uses `QuantumFlow.FlowBuilder` for workflow creation
-- **Real-time Notifications**: Uses `QuantumFlow.Notifications` for event broadcasting
-- **Multi-instance Support**: Works with quantum_flow's distributed architecture
+- **Workflow Execution**: Uses `Singularity.Workflow.Executor` for workflow execution
+- **Dynamic Workflows**: Uses `Singularity.Workflow.FlowBuilder` for workflow creation
+- **Real-time Notifications**: Uses `Singularity.Workflow.Notifications` for event broadcasting
+- **Multi-instance Support**: Works with Singularity.Workflow's distributed architecture
 
 ## Best Practices
 
