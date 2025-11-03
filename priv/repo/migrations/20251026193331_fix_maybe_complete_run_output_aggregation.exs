@@ -1,6 +1,6 @@
 defmodule Singularity.Workflow.Repo.Migrations.FixMaybeCompleteRunOutputAggregation do
   @moduledoc """
-  Fixes QuantumFlow.maybe_complete_run() to aggregate leaf step outputs into a flat array
+  Fixes singularity_workflow.maybe_complete_run() to aggregate leaf step outputs into a flat array
   instead of nested objects.
 
   Previous version used jsonb_object_agg(step_slug, output) which created:
@@ -13,7 +13,7 @@ defmodule Singularity.Workflow.Repo.Migrations.FixMaybeCompleteRunOutputAggregat
 
   def up do
     execute("""
-    CREATE OR REPLACE FUNCTION QuantumFlow.maybe_complete_run(p_run_id UUID)
+    CREATE OR REPLACE FUNCTION singularity_workflow.maybe_complete_run(p_run_id UUID)
     RETURNS void
     LANGUAGE plpgsql
     AS $$
@@ -81,7 +81,7 @@ defmodule Singularity.Workflow.Repo.Migrations.FixMaybeCompleteRunOutputAggregat
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.maybe_complete_run(UUID) IS
+    COMMENT ON FUNCTION singularity_workflow.maybe_complete_run(UUID) IS
     'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches Singularity.Workflow implementation.'
     """)
   end
@@ -89,7 +89,7 @@ defmodule Singularity.Workflow.Repo.Migrations.FixMaybeCompleteRunOutputAggregat
   def down do
     # Revert to the previous buggy version that creates nested objects
     execute("""
-    CREATE OR REPLACE FUNCTION QuantumFlow.maybe_complete_run(p_run_id UUID)
+    CREATE OR REPLACE FUNCTION singularity_workflow.maybe_complete_run(p_run_id UUID)
     RETURNS void
     LANGUAGE plpgsql
     AS $$
@@ -144,7 +144,7 @@ defmodule Singularity.Workflow.Repo.Migrations.FixMaybeCompleteRunOutputAggregat
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.maybe_complete_run(UUID) IS
+    COMMENT ON FUNCTION singularity_workflow.maybe_complete_run(UUID) IS
     'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs. Matches Singularity.Workflow implementation.'
     """)
   end

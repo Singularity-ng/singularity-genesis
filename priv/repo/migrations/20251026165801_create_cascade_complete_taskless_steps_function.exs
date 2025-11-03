@@ -12,7 +12,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateCascadeCompleteTasklessStep
 
   def up do
     execute("""
-    CREATE OR REPLACE FUNCTION QuantumFlow.cascade_complete_taskless_steps(p_run_id UUID)
+    CREATE OR REPLACE FUNCTION singularity_workflow.cascade_complete_taskless_steps(p_run_id UUID)
     RETURNS INTEGER
     LANGUAGE plpgsql
     AS $$
@@ -54,7 +54,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateCascadeCompleteTasklessStep
         PERFORM start_ready_steps(p_run_id);
 
         -- Check if the run is now complete
-        PERFORM QuantumFlow.maybe_complete_run(p_run_id);
+        PERFORM singularity_workflow.maybe_complete_run(p_run_id);
       END LOOP;
 
       RETURN v_completed_count;
@@ -64,6 +64,6 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateCascadeCompleteTasklessStep
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.cascade_complete_taskless_steps(UUID)")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.cascade_complete_taskless_steps(UUID)")
   end
 end

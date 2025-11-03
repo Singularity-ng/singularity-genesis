@@ -14,12 +14,12 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateCreateFlowFunction do
   use Ecto.Migration
 
   def up do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.create_flow(TEXT, INTEGER, INTEGER) CASCADE")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.create_flow(TEXT, INTEGER, INTEGER) CASCADE")
 
     # Use explicit column numbering to avoid parser bug
     # This bypasses PostgreSQL's column name resolution entirely
     execute("""
-    CREATE FUNCTION QuantumFlow.create_flow(
+    CREATE FUNCTION singularity_workflow.create_flow(
       arg1 TEXT,
       arg2 INTEGER DEFAULT 3,
       arg3 INTEGER DEFAULT 60
@@ -35,7 +35,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateCreateFlowFunction do
     BEGIN
       DELETE FROM workflows WHERE workflows.workflow_slug = arg1;
       INSERT INTO workflows (workflow_slug, max_attempts, timeout) VALUES (arg1, arg2, arg3);
-      PERFORM QuantumFlow.ensure_workflow_queue(arg1);
+      PERFORM singularity_workflow.ensure_workflow_queue(arg1);
       RETURN QUERY SELECT (SELECT workflow_slug FROM workflows WHERE workflow_slug = arg1),
                          (SELECT max_attempts FROM workflows WHERE workflow_slug = arg1),
                          (SELECT timeout FROM workflows WHERE workflow_slug = arg1),
@@ -45,12 +45,12 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateCreateFlowFunction do
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.create_flow(TEXT, INTEGER, INTEGER) IS
+    COMMENT ON FUNCTION singularity_workflow.create_flow(TEXT, INTEGER, INTEGER) IS
     'Creates workflow definition and ensures pgmq queue exists. Idempotent. Matches Singularity.Workflow create_flow().'
     """)
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.create_flow(TEXT, INTEGER, INTEGER)")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.create_flow(TEXT, INTEGER, INTEGER)")
   end
 end

@@ -1,6 +1,6 @@
 defmodule Singularity.Workflow.Repo.Migrations.CreateMaybeCompleteRunFunction do
   @moduledoc """
-  Creates QuantumFlow.maybe_complete_run() for checking and completing workflow runs.
+  Creates singularity_workflow.maybe_complete_run() for checking and completing workflow runs.
 
   Matches Singularity.Workflow's implementation:
   1. Check if all steps are completed (remaining_steps = 0)
@@ -14,7 +14,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateMaybeCompleteRunFunction do
 
   def up do
     execute("""
-    CREATE OR REPLACE FUNCTION QuantumFlow.maybe_complete_run(p_run_id UUID)
+    CREATE OR REPLACE FUNCTION singularity_workflow.maybe_complete_run(p_run_id UUID)
     RETURNS void
     LANGUAGE plpgsql
     AS $$
@@ -66,12 +66,12 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateMaybeCompleteRunFunction do
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.maybe_complete_run(UUID) IS
+    COMMENT ON FUNCTION singularity_workflow.maybe_complete_run(UUID) IS
     'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches Singularity.Workflow implementation.'
     """)
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.maybe_complete_run(UUID)")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.maybe_complete_run(UUID)")
   end
 end

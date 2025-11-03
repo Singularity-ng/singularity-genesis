@@ -231,13 +231,13 @@ defmodule Singularity.Workflow.Repo.Migrations.ChangeCompleteTaskReturnType do
         WHERE id = p_run_id;
 
         -- After step completion, cascade any taskless steps (empty-array propagation)
-        PERFORM QuantumFlow.cascade_complete_taskless_steps(p_run_id);
+        PERFORM singularity_workflow.cascade_complete_taskless_steps(p_run_id);
 
         -- Trigger start_ready_steps to awaken newly ready steps
         PERFORM start_ready_steps(p_run_id);
 
         -- Then check if run is complete and aggregate leaf outputs
-        PERFORM QuantumFlow.maybe_complete_run(p_run_id);
+        PERFORM singularity_workflow.maybe_complete_run(p_run_id);
       END IF;
 
       RETURN 1;  -- Success: 1 task completed

@@ -31,7 +31,7 @@ defmodule Singularity.Workflow.Repo.Migrations.RewriteStartReadyStepsWithPgmq do
       WHERE id = p_run_id;
 
       -- Ensure queue exists for this workflow
-      PERFORM QuantumFlow.ensure_workflow_queue(v_workflow_slug);
+      PERFORM singularity_workflow.ensure_workflow_queue(v_workflow_slug);
 
       -- Mark ready steps as started and send tasks to pgmq
       WITH ready_steps AS (

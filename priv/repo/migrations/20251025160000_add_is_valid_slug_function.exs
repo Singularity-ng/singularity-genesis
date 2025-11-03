@@ -14,7 +14,7 @@ defmodule Singularity.Workflow.Repo.Migrations.AddIsValidSlugFunction do
 
   def up do
     execute("""
-    CREATE OR REPLACE FUNCTION QuantumFlow.is_valid_slug(slug TEXT)
+    CREATE OR REPLACE FUNCTION singularity_workflow.is_valid_slug(slug TEXT)
     RETURNS BOOLEAN
     LANGUAGE plpgsql
     IMMUTABLE
@@ -31,12 +31,12 @@ defmodule Singularity.Workflow.Repo.Migrations.AddIsValidSlugFunction do
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.is_valid_slug(TEXT) IS
+    COMMENT ON FUNCTION singularity_workflow.is_valid_slug(TEXT) IS
     'Validates slug format: not null, 1-128 chars, alphanumeric with underscores, no reserved words. Matches Singularity.Workflow implementation.'
     """)
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.is_valid_slug(TEXT)")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.is_valid_slug(TEXT)")
   end
 end

@@ -216,9 +216,9 @@ defmodule Singularity.Workflow.Repo.Migrations.FixCompleteTaskSelect do
         SET remaining_steps = remaining_steps - 1
         WHERE id = p_run_id;
 
-        PERFORM QuantumFlow.cascade_complete_taskless_steps(p_run_id);
+        PERFORM singularity_workflow.cascade_complete_taskless_steps(p_run_id);
         PERFORM start_ready_steps(p_run_id);
-        PERFORM QuantumFlow.maybe_complete_run(p_run_id);
+        PERFORM singularity_workflow.maybe_complete_run(p_run_id);
       END IF;
 
       RETURN 1;

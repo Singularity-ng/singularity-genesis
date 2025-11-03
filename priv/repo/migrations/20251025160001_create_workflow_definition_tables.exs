@@ -22,7 +22,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateWorkflowDefinitionTables do
       add :created_at, :utc_datetime, null: false, default: fragment("NOW()")
     end
 
-    create constraint(:workflows, :workflow_slug_is_valid, check: "QuantumFlow.is_valid_slug(workflow_slug)")
+    create constraint(:workflows, :workflow_slug_is_valid, check: "singularity_workflow.is_valid_slug(workflow_slug)")
     create constraint(:workflows, :max_attempts_is_nonnegative, check: "max_attempts >= 0")
     create constraint(:workflows, :timeout_is_positive, check: "timeout > 0")
 
@@ -41,7 +41,7 @@ defmodule Singularity.Workflow.Repo.Migrations.CreateWorkflowDefinitionTables do
 
     create unique_index(:workflow_steps, [:workflow_slug, :step_slug], name: :workflow_steps_pkey)
     create unique_index(:workflow_steps, [:workflow_slug, :step_index])
-    create constraint(:workflow_steps, :step_slug_is_valid, check: "QuantumFlow.is_valid_slug(step_slug)")
+    create constraint(:workflow_steps, :step_slug_is_valid, check: "singularity_workflow.is_valid_slug(step_slug)")
     create constraint(:workflow_steps, :step_type_is_valid, check: "step_type IN ('single', 'map')")
     create constraint(:workflow_steps, :deps_count_nonnegative, check: "deps_count >= 0")
     create constraint(:workflow_steps, :initial_tasks_nonnegative, check: "initial_tasks IS NULL OR initial_tasks >= 0")
