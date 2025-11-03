@@ -67,7 +67,7 @@ defmodule Singularity.Workflow.ExecutorTest do
   - Error handling and status queries
   - Database-driven DAG coordination
 
-  NOTE: These are integration tests requiring PostgreSQL with QuantumFlow schema.
+  NOTE: These are integration tests requiring PostgreSQL with Singularity.Workflow schema.
   Tests run against real database with migrations applied.
   """
 

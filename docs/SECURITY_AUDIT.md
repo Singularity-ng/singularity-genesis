@@ -140,9 +140,9 @@ Task.async_stream(tasks, fn task -> ... end,
 
 ---
 
-## Comparison to QuantumFlow (TypeScript)
+## Comparison to Singularity.Workflow (TypeScript)
 
-| Security Aspect | QuantumFlow | singularity_workflow | Notes |
+| Security Aspect | Singularity.Workflow | singularity_workflow | Notes |
 |----------------|--------|-----------|-------|
 | **SQL Injection** | ✅ Safe (pg parameterization) | ✅ Safe (Ecto parameterization) | Both use driver-level protection |
 | **Type Safety** | ✅ TypeScript | ✅ Dialyzer + @spec | Compile-time checks |
@@ -150,7 +150,7 @@ Task.async_stream(tasks, fn task -> ... end,
 | **Error Handling** | ✅ try/catch | ✅ {:ok, _} / {:error, _} | BEAM supervision more robust |
 | **Process Isolation** | ❌ Single-threaded JS | ✅ BEAM process isolation | singularity_workflow has better fault isolation |
 
-**Verdict:** singularity_workflow has EQUAL or BETTER security than QuantumFlow!
+**Verdict:** singularity_workflow has EQUAL or BETTER security than Singularity.Workflow!
 
 ---
 

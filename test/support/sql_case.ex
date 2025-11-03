@@ -3,7 +3,7 @@ defmodule Singularity.Workflow.SqlCase do
   Helper for SQL-based tests. Connects to Postgres using POSTGRES_URL or DATABASE_URL.
 
   Tests using this helper will be skipped if a DB is not reachable or the required
-  QuantumFlow tables are not present. This makes the migrated tests non-fatal in CI
+  Singularity.Workflow tables are not present. This makes the migrated tests non-fatal in CI
   environments where the developer hasn't prepared a DB.
   """
 
@@ -11,7 +11,7 @@ defmodule Singularity.Workflow.SqlCase do
 
   @doc """
   Attempt to connect to the database and return a Postgrex connection.
-  If the DB is unavailable or the QuantumFlow tables are not present, call
+  If the DB is unavailable or the Singularity.Workflow tables are not present, call
   ExUnit.Callbacks.skip/1 to skip the test at runtime.
   """
   def connect_or_skip do
@@ -36,7 +36,7 @@ defmodule Singularity.Workflow.SqlCase do
                 Process.exit(conn, :normal)
 
                 {:skip,
-                 "Database does not have QuantumFlow tables; run migrations before enabling SQL tests"}
+                 "Database does not have Singularity.Workflow tables; run migrations before enabling SQL tests"}
 
               _ ->
                 # register a stop on exit and return connection
@@ -49,7 +49,7 @@ defmodule Singularity.Workflow.SqlCase do
             Process.exit(conn, :normal)
 
             {:skip,
-             "Database query failed; ensure DATABASE_URL points to a migrated QuantumFlow DB"}
+             "Database query failed; ensure DATABASE_URL points to a migrated Singularity.Workflow DB"}
         end
 
       {:error, reason} ->

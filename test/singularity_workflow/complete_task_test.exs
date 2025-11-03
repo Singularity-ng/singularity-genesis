@@ -7,7 +7,7 @@ defmodule Singularity.Workflow.CompleteTaskTest do
   @moduledoc """
   Integration tests for complete_task() SQL function.
 
-  These tests require a running Postgres with the QuantumFlow schema/migrations applied.
+  These tests require a running Postgres with the Singularity.Workflow schema/migrations applied.
   Set DATABASE_URL to point to the DB before running `mix test` to enable them.
 
   NOTE: These tests have database state management issues with simultaneous test execution.

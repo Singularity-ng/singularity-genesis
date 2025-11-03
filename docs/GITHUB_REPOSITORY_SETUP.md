@@ -1,6 +1,6 @@
-# GitHub Repository Setup for QuantumFlow
+# GitHub Repository Setup for Singularity.Workflow
 
-This guide covers configuring the GitHub repository for QuantumFlow v0.1.0 release.
+This guide covers configuring the GitHub repository for Singularity.Workflow v0.1.0 release.
 
 ## Repository Description
 
@@ -8,7 +8,7 @@ Update the repository description to help potential users understand the project
 
 ### Current Description
 ```
-Elixir implementation of QuantumFlow's database-driven DAG execution engine
+Elixir implementation of Singularity.Workflow's database-driven DAG execution engine
 ```
 
 ### Setup Steps
@@ -18,7 +18,7 @@ Elixir implementation of QuantumFlow's database-driven DAG execution engine
 3. In the "General" section at the top, find the **Description** field
 4. Update to:
    ```
-   Elixir implementation of QuantumFlow - database-driven DAG execution engine with 100% feature parity.
+   Elixir implementation of Singularity.Workflow - database-driven DAG execution engine with 100% feature parity.
    Parallel execution, map steps, dependency merging, multi-instance scaling via PostgreSQL + pgmq.
    ```
 5. Add a **Website** URL (optional):
@@ -51,7 +51,7 @@ Discussions provide a space for Q&A and community discussion:
 - Q&A - Questions about usage and best practices
 - Announcements - Release notes and updates
 - Ideas - Feature requests and suggestions
-- Show and tell - Community projects using QuantumFlow
+- Show and tell - Community projects using Singularity.Workflow
 
 ## Repository Topics
 
@@ -65,7 +65,7 @@ Add topics to help discoverability:
    - `workflow`
    - `dag`
    - `task-execution`
-   - `QuantumFlow`
+   - `Singularity.Workflow`
    - `distributed-systems`
 
 ## Branch Protection Rules (Optional)
@@ -84,7 +84,7 @@ Protect the `main` branch to enforce quality standards:
 
 ## Labels for Issues
 
-GitHub creates default labels. Customize them for QuantumFlow:
+GitHub creates default labels. Customize them for Singularity.Workflow:
 
 1. Go to **Issues → Labels**
 2. Keep/customize these labels:
@@ -96,7 +96,7 @@ GitHub creates default labels. Customize them for QuantumFlow:
    - `question` - User questions (purple)
    - `test` - Test-related (yellow)
 
-3. Add QuantumFlow-specific labels:
+3. Add Singularity.Workflow-specific labels:
    - `migration` - Related to database migrations
    - `performance` - Performance improvements/issues
    - `security` - Security concerns
@@ -180,7 +180,7 @@ When publishing v0.1.0:
    - Go to **Code → Releases**
    - Click **Draft a new release**
    - Tag: `v0.1.0`
-   - Title: `QuantumFlow v0.1.0`
+   - Title: `Singularity.Workflow v0.1.0`
    - Description: Copy from CHANGELOG.md
 
 2. **Publish Release**:
@@ -244,7 +244,7 @@ What should happen instead.
 
 - Elixir version: `elixir --version`
 - PostgreSQL version: `psql --version`
-- QuantumFlow version: 0.1.0
+- Singularity.Workflow version: 0.1.0
 
 ## Additional context
 
@@ -294,7 +294,7 @@ We will respond within 48 hours and work on a fix in a private security advisory
 
 ## Security Considerations
 
-QuantumFlow is designed for internal use cases. Key security aspects:
+Singularity.Workflow is designed for internal use cases. Key security aspects:
 
 - Database connections should use strong credentials
 - pgmq queue should not be publicly accessible

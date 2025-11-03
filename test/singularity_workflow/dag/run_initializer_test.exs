@@ -90,9 +90,9 @@ defmodule Singularity.Workflow.DAG.RunInitializerTest do
   - Dependency graph setup
   - Counter initialization
 
-  NOTE: These tests require PostgreSQL with QuantumFlow SQL functions.
+  NOTE: These tests require PostgreSQL with Singularity.Workflow SQL functions.
   Set DATABASE_URL or start database with migrations.
-  Run with: mix test test/QuantumFlow/dag/run_initializer_test.exs
+  Run with: mix test test/Singularity.Workflow/dag/run_initializer_test.exs
 
   Tests are tagged :integration and can be skipped if database is unavailable.
   """

@@ -12,7 +12,7 @@ mix test
 mix test --exclude flow_builder_test
 
 # Run specific test file
-mix test test/QuantumFlow/complete_task_test.exs
+mix test test/Singularity.Workflow/complete_task_test.exs
 
 # Run with verbose output
 mix test --trace
@@ -120,7 +120,7 @@ This creates:
 - `workflow_step_tasks` - Individual tasks
 - `workflow_runs` - Run instances
 - `workflow_step_dependencies` - Step dependencies
-- QuantumFlow SQL functions
+- Singularity.Workflow SQL functions
 - pgmq queue tables
 
 ## Running Tests
@@ -151,16 +151,16 @@ This runs 336/336 tests and passes on all PostgreSQL versions.
 
 ```bash
 # Test complete_task functionality
-mix test test/QuantumFlow/complete_task_test.exs
+mix test test/Singularity.Workflow/complete_task_test.exs
 
 # Test clock abstraction
-mix test test/QuantumFlow/clock_test.exs
+mix test test/Singularity.Workflow/clock_test.exs
 
 # Test step task logic
-mix test test/QuantumFlow/step_task_test.exs
+mix test test/Singularity.Workflow/step_task_test.exs
 
 # Test workflow execution
-mix test test/QuantumFlow/workflow_run_test.exs
+mix test test/Singularity.Workflow/workflow_run_test.exs
 ```
 
 ### Run with Verbose Output
@@ -212,10 +212,10 @@ mix test --statistics
 
 ```bash
 # Run with debug SQL output
-ECTO_LOG_LEVEL=debug mix test test/QuantumFlow/complete_task_test.exs
+ECTO_LOG_LEVEL=debug mix test test/Singularity.Workflow/complete_task_test.exs
 
 # Run with very verbose output
-mix test test/QuantumFlow/complete_task_test.exs --trace
+mix test test/Singularity.Workflow/complete_task_test.exs --trace
 ```
 
 ### Check Test Helpers

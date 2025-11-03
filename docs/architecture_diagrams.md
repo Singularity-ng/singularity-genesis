@@ -1,4 +1,4 @@
-# QuantumFlow Architecture Diagrams
+# Singularity.Workflow Architecture Diagrams
 
 This document contains comprehensive Mermaid diagrams showing the PGMQ + NOTIFY architecture and data flow.
 
@@ -254,9 +254,9 @@ graph TB
     end
     
     subgraph "Application Tier"
-        B[QuantumFlow App 1]
-        C[QuantumFlow App 2]
-        D[QuantumFlow App 3]
+        B[Singularity.Workflow App 1]
+        C[Singularity.Workflow App 2]
+        D[Singularity.Workflow App 3]
     end
     
     subgraph "Database Tier"
@@ -291,8 +291,8 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Kubernetes Cluster"
-        subgraph "Namespace: QuantumFlow"
-            A[QuantumFlow Deployment]
+        subgraph "Namespace: Singularity.Workflow"
+            A[Singularity.Workflow Deployment]
             B[PostgreSQL StatefulSet]
             C[pgmq Extension]
         end
@@ -414,17 +414,17 @@ sequenceDiagram
 ```mermaid
 graph TB
     subgraph "Instance 1"
-        A1[QuantumFlow App 1]
+        A1[Singularity.Workflow App 1]
         B1[Local Tasks]
     end
     
     subgraph "Instance 2"
-        A2[QuantumFlow App 2]
+        A2[Singularity.Workflow App 2]
         B2[Local Tasks]
     end
     
     subgraph "Instance 3"
-        A3[QuantumFlow App 3]
+        A3[Singularity.Workflow App 3]
         B3[Local Tasks]
     end
     
@@ -444,4 +444,4 @@ graph TB
     E --> A3
 ```
 
-These diagrams provide a comprehensive view of the QuantumFlow architecture, showing how PGMQ + NOTIFY integration works across all layers of the system.
+These diagrams provide a comprehensive view of the Singularity.Workflow architecture, showing how PGMQ + NOTIFY integration works across all layers of the system.

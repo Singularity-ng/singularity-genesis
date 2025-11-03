@@ -1,4 +1,4 @@
-if System.get_env("QUANTUM_FLOW_SKIP_DB") != "1" do
+if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
   defmodule Singularity.Workflow.Orchestrator.ExecutorTest do
     use ExUnit.Case, async: true
 
