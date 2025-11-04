@@ -16,13 +16,14 @@ defmodule Singularity.Workflow.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :ecto, :ecto_sql]
     ]
   end
 
   defp deps do
     [
       # Core database dependencies
+      {:ecto, "~> 3.13"},
       {:ecto_sql, "~> 3.13"},
       {:postgrex, "~> 0.21"},
 
