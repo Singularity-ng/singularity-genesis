@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: mikkihugo/quantum_flow-postgres
+  IMAGE_NAME: singularity-ng/singularity_workflow-postgres
 
 jobs:
   build-postgres:

@@ -10,7 +10,7 @@ Code.require_file("support/sql_case.ex", __DIR__)
 Code.require_file("support/snapshot.ex", __DIR__)
 
 # Start Ecto Repo for integration tests unless explicitly skipped
-if System.get_env("QUANTUM_FLOW_SKIP_DB") != "1" do
+if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
   {:ok, _} = Singularity.Workflow.Repo.start_link()
   Ecto.Adapters.SQL.Sandbox.mode(Singularity.Workflow.Repo, :manual)
 else

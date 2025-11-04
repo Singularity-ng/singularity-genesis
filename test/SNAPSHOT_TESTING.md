@@ -1,8 +1,8 @@
-# Snapshot Testing in QuantumFlow
+# Snapshot Testing in Singularity.Workflow
 
 ## Overview
 
-QuantumFlow uses **hybrid snapshot testing** to combine the benefits of:
+Singularity.Workflow uses **hybrid snapshot testing** to combine the benefits of:
 - **Focused assertions** - Test critical business logic with explicit assertions
 - **Snapshot regression detection** - Catch unintended structural changes
 
@@ -28,7 +28,7 @@ test "complex operation produces expected structure" do
   assert length(result.tasks) == 5
 
   # Snapshot for structure regression detection
-  QuantumFlow.Test.Snapshot.assert_snapshot(result, "operation_structure")
+  Singularity.Workflow.Test.Snapshot.assert_snapshot(result, "operation_structure")
 end
 ```
 
@@ -43,7 +43,7 @@ SNAPSHOT_UPDATE=1 mix test
 
 Or update a specific snapshot:
 ```bash
-SNAPSHOT_UPDATE=1 mix test test/quantum_flow/orchestrator_test.exs
+SNAPSHOT_UPDATE=1 mix test test/singularity_workflow/orchestrator_test.exs
 ```
 
 ## File Organization
@@ -86,7 +86,7 @@ test "orchestrator decomposes complex goal" do
   assert task_graph.tasks[:finalize].depends_on == [:validate, :merge]
 
   # Structure regression detection: full snapshot
-  QuantumFlow.Test.Snapshot.assert_snapshot(task_graph, "complex_goal_decomposition")
+  Singularity.Workflow.Test.Snapshot.assert_snapshot(task_graph, "complex_goal_decomposition")
 end
 ```
 
@@ -136,10 +136,10 @@ Compare data with stored snapshot.
 
 ```elixir
 # Create or compare snapshot
-QuantumFlow.Test.Snapshot.assert_snapshot(result, "operation_result")
+Singularity.Workflow.Test.Snapshot.assert_snapshot(result, "operation_result")
 
 # Force update even if it matches
-QuantumFlow.Test.Snapshot.assert_snapshot(result, "operation_result", update: true)
+Singularity.Workflow.Test.Snapshot.assert_snapshot(result, "operation_result", update: true)
 ```
 
 ### `assert_json_equal(actual, expected, message)`
@@ -148,7 +148,7 @@ Compare two structures as JSON without snapshots.
 
 ```elixir
 # Useful for dynamic comparisons
-QuantumFlow.Test.Snapshot.assert_json_equal(actual_dag, expected_dag, "DAG structure")
+Singularity.Workflow.Test.Snapshot.assert_json_equal(actual_dag, expected_dag, "DAG structure")
 ```
 
 ## See Also

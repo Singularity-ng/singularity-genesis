@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.CreateAddStepFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateAddStepFunction do
   @moduledoc """
   Creates add_step() function for dynamic step creation.
 
@@ -8,15 +8,15 @@ defmodule QuantumFlow.Repo.Migrations.CreateAddStepFunction do
   - Dependencies exist
 
   Auto-increments step_index for ordering.
-  Matches QuantumFlow's add_step implementation.
+  Matches Singularity.Workflow's add_step implementation.
   """
   use Ecto.Migration
 
   def up do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.add_step(TEXT, TEXT, TEXT[], TEXT, INTEGER, INTEGER, INTEGER) CASCADE")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.add_step(TEXT, TEXT, TEXT[], TEXT, INTEGER, INTEGER, INTEGER) CASCADE")
 
     execute("""
-    CREATE FUNCTION QuantumFlow.add_step(
+    CREATE FUNCTION singularity_workflow.add_step(
       p_workflow_slug TEXT,
       p_step_slug TEXT,
       p_depends_on TEXT[] DEFAULT '{}',
@@ -44,11 +44,11 @@ defmodule QuantumFlow.Repo.Migrations.CreateAddStepFunction do
       v_deps_count INTEGER;
     BEGIN
       -- Validate slugs
-      IF NOT QuantumFlow.is_valid_slug(p_workflow_slug) THEN
+      IF NOT singularity_workflow.is_valid_slug(p_workflow_slug) THEN
         RAISE EXCEPTION 'Invalid workflow_slug: %', p_workflow_slug;
       END IF;
 
-      IF NOT QuantumFlow.is_valid_slug(p_step_slug) THEN
+      IF NOT singularity_workflow.is_valid_slug(p_step_slug) THEN
         RAISE EXCEPTION 'Invalid step_slug: %', p_step_slug;
       END IF;
 
@@ -155,12 +155,12 @@ defmodule QuantumFlow.Repo.Migrations.CreateAddStepFunction do
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.add_step(TEXT, TEXT, TEXT[], TEXT, INTEGER, INTEGER, INTEGER) IS
-    'Adds step to workflow definition. Validates dependencies and map step constraints. Idempotent. Matches QuantumFlow add_step().'
+    COMMENT ON FUNCTION singularity_workflow.add_step(TEXT, TEXT, TEXT[], TEXT, INTEGER, INTEGER, INTEGER) IS
+    'Adds step to workflow definition. Validates dependencies and map step constraints. Idempotent. Matches Singularity.Workflow add_step().'
     """)
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.add_step(TEXT, TEXT, TEXT[], TEXT, INTEGER, INTEGER, INTEGER)")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.add_step(TEXT, TEXT, TEXT[], TEXT, INTEGER, INTEGER, INTEGER)")
   end
 end

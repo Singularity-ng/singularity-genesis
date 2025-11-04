@@ -3,7 +3,7 @@ defmodule Singularity.Workflow.StepState do
   Ecto schema for workflow_step_states table.
 
   Tracks step progress within a workflow run - the coordination layer for DAG execution.
-  Matches QuantumFlow's step_states table design.
+  Matches Singularity.Workflow's step_states table design.
 
   ## Counter-Based Coordination Flow
 
@@ -34,7 +34,7 @@ defmodule Singularity.Workflow.StepState do
 
   ## Counter-Based Coordination
 
-  The key innovation from QuantumFlow:
+  The key innovation from Singularity.Workflow:
 
   - `remaining_deps` - How many dependency steps haven't completed yet
   - `remaining_tasks` - How many tasks in this step are still executing

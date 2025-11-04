@@ -1,14 +1,14 @@
-defmodule QuantumFlow.Repo.Migrations.CreatePgmqQueueFunctions do
+defmodule Singularity.Workflow.Repo.Migrations.CreatePgmqQueueFunctions do
   use Ecto.Migration
 
   def up do
-    # Create QuantumFlow schema for custom functions
-    execute("CREATE SCHEMA IF NOT EXISTS QuantumFlow;")
+    # Create singularity_workflow PostgreSQL schema for custom functions
+    execute("CREATE SCHEMA IF NOT EXISTS singularity_workflow;")
 
     # Create read_with_poll function (backport from pgmq 1.5.0)
-    # This matches QuantumFlow's implementation for task polling
+    # This matches Singularity.Workflow's implementation for task polling
     execute("""
-    CREATE FUNCTION QuantumFlow.read_with_poll(
+    CREATE FUNCTION singularity_workflow.read_with_poll(
       queue_name TEXT,
       vt INTEGER,
       qty INTEGER,
@@ -73,7 +73,7 @@ defmodule QuantumFlow.Repo.Migrations.CreatePgmqQueueFunctions do
 
     # Create function to initialize workflow queue
     execute("""
-    CREATE FUNCTION QuantumFlow.ensure_workflow_queue(workflow_slug TEXT)
+    CREATE FUNCTION singularity_workflow.ensure_workflow_queue(workflow_slug TEXT)
     RETURNS TEXT
     LANGUAGE SQL
     SET search_path TO ''
@@ -88,7 +88,7 @@ defmodule QuantumFlow.Repo.Migrations.CreatePgmqQueueFunctions do
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.read_with_poll")
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.ensure_workflow_queue")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.read_with_poll")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.ensure_workflow_queue")
   end
 end

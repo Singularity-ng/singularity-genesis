@@ -2,7 +2,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
   @moduledoc """
   Executes workflow step tasks from the database.
 
-  Implements the QuantumFlow execution model:
+  Implements the Singularity.Workflow execution model:
   1. Poll for queued tasks
   2. Claim a task (mark as 'started')
   3. Execute the step function
@@ -47,7 +47,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
   @doc """
   Execute all tasks for a workflow run until completion or failure.
 
-  Uses pgmq for task coordination (matches QuantumFlow architecture):
+  Uses pgmq for task coordination (matches Singularity.Workflow architecture):
   1. Poll messages from pgmq queue
   2. Call start_tasks() to claim tasks
   3. Execute step functions
@@ -93,9 +93,9 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
     # 200ms between polls
     worker_id = Keyword.get(opts, :worker_id, Ecto.UUID.generate())
     batch_size = Keyword.get(opts, :batch_size, 10)
-    # Poll up to 10 messages at once (matches QuantumFlow default)
+    # Poll up to 10 messages at once (matches Singularity.Workflow default)
     max_poll_seconds = Keyword.get(opts, :max_poll_seconds, 5)
-    # Max time to wait for messages (matches QuantumFlow default)
+    # Max time to wait for messages (matches Singularity.Workflow default)
     task_timeout_ms = Keyword.get(opts, :task_timeout_ms, 30_000)
     # Task execution timeout in milliseconds (default: 30 seconds)
 
@@ -234,7 +234,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
     end
   end
 
-  # Poll pgmq for messages and execute tasks (matches QuantumFlow architecture)
+  # Poll pgmq for messages and execute tasks (matches Singularity.Workflow architecture)
   @spec poll_and_execute_batch(
           String.t(),
           WorkflowDefinition.t(),
@@ -444,7 +444,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
     end
   end
 
-  # Complete task successfully (using QuantumFlow complete_task function)
+  # Complete task successfully (using Singularity.Workflow complete_task function)
   #
   # Calls the PostgreSQL complete_task stored function to mark the task as successfully
   # executed and store the output. This function handles dependency counters, task queue
@@ -484,7 +484,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
     end
   end
 
-  # Complete task with failure (using QuantumFlow fail_task function)
+  # Complete task with failure (using Singularity.Workflow fail_task function)
   #
   # Calls the PostgreSQL fail_task stored function to mark a task as failed with an error
   # message. This function may increment retry counters or mark the step/workflow as failed

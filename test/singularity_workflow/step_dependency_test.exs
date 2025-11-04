@@ -95,7 +95,7 @@ defmodule Singularity.Workflow.StepDependencyTest do
 
   # NOTE: find_dependents/3 and find_dependencies/3 are better tested
   # as integration tests with a real database connection.
-  # See test/QuantumFlow/complete_task_test.exs for integration testing.
+  # See test/Singularity.Workflow/complete_task_test.exs for integration testing.
 
   describe "schema properties" do
     test "has no primary key" do

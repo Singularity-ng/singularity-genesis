@@ -1,13 +1,13 @@
 ---
 name: Question
-about: Ask a question about QuantumFlow
+about: Ask a question about Singularity.Workflow
 title: "[QUESTION] "
 labels: question
 ---
 
 ## Question
 
-What would you like to know about QuantumFlow?
+What would you like to know about Singularity.Workflow?
 
 ## Context
 
@@ -18,10 +18,10 @@ Provide any relevant context about your question:
 
 ## Documentation Checked
 
-- [ ] [GETTING_STARTED.md](https://github.com/mikkihugo/quantum_flow/blob/main/GETTING_STARTED.md)
-- [ ] [ARCHITECTURE.md](https://github.com/mikkihugo/quantum_flow/blob/main/ARCHITECTURE.md)
-- [ ] Generated API docs (https://hexdocs.pm/quantum_flow)
-- [ ] [docs/ reference materials](https://github.com/mikkihugo/quantum_flow/tree/main/docs)
+- [ ] [GETTING_STARTED.md](https://github.com/Singularity-ng/singularity-workflows/blob/main/GETTING_STARTED.md)
+- [ ] [ARCHITECTURE.md](https://github.com/Singularity-ng/singularity-workflows/blob/main/ARCHITECTURE.md)
+- [ ] Generated API docs (https://hexdocs.pm/singularity_workflow)
+- [ ] [docs/ reference materials](https://github.com/Singularity-ng/singularity-workflows/tree/main/docs)
 
 ## Code Example (if applicable)
 

@@ -1,6 +1,6 @@
-# Getting Started with QuantumFlow
+# Getting Started with Singularity.Workflow
 
-QuantumFlow is an Elixir implementation of [QuantumFlow](https://github.com/singularity_workflow-dev/QuantumFlow), a database-driven DAG execution engine. This guide walks you through installation, basic setup, and running your first workflow.
+Singularity.Workflow is an Elixir implementation of [Singularity.Workflow](https://github.com/singularity_workflow-dev/Singularity.Workflow), a database-driven DAG execution engine. This guide walks you through installation, basic setup, and running your first workflow.
 
 ## Installation
 
@@ -22,7 +22,7 @@ mix deps.get
 
 ## Database Setup
 
-QuantumFlow requires PostgreSQL 14+ with the `pgmq` extension:
+Singularity.Workflow requires PostgreSQL 14+ with the `pgmq` extension:
 
 ### 1. Create a PostgreSQL Database
 
@@ -30,7 +30,7 @@ QuantumFlow requires PostgreSQL 14+ with the `pgmq` extension:
 createdb my_app
 ```
 
-### 2. Add QuantumFlow Repository
+### 2. Add Singularity.Workflow Repository
 
 Configure Ecto in your app to include the Singularity.Workflow.Repo:
 
@@ -57,7 +57,7 @@ psql my_app -c "CREATE EXTENSION IF NOT EXISTS pgmq"
 ### 4. Run Migrations
 
 ```bash
-# Generate migrations for QuantumFlow tables
+# Generate migrations for Singularity.Workflow tables
 mix ecto.gen.migration init_singularity_workflow
 
 # Run all migrations
@@ -155,7 +155,7 @@ IO.inspect(run.status)  # => "completed"
 
 ## DAG Workflows with Dependencies
 
-QuantumFlow supports complex DAG workflows with parallel execution and dependency management:
+Singularity.Workflow supports complex DAG workflows with parallel execution and dependency management:
 
 ```elixir
 defmodule MyApp.Workflows.DataPipeline do
@@ -394,7 +394,7 @@ For the complete guide, see [HTDAG_ORCHESTRATOR_GUIDE.md](docs/HTDAG_ORCHESTRATO
 
 ## Configuration
 
-QuantumFlow respects these environment variables:
+Singularity.Workflow respects these environment variables:
 
 ```bash
 # PostgreSQL connection
@@ -448,7 +448,7 @@ Executor.execute_pending_tasks()
 
 ### Type errors in custom workflows
 
-QuantumFlow uses Dialyzer for type checking. Run:
+Singularity.Workflow uses Dialyzer for type checking. Run:
 
 ```bash
 mix dialyzer

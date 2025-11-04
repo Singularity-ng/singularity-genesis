@@ -68,7 +68,11 @@ defmodule Singularity.Workflow.OrchestratorNotifications do
   @notifications_env_key :notifications_impl
 
   defp notifications_impl do
-    Application.get_env(:singularity_workflow, @notifications_env_key, Singularity.Workflow.Notifications)
+    Application.get_env(
+      :singularity_workflow,
+      @notifications_env_key,
+      Singularity.Workflow.Notifications
+    )
   end
 
   @doc """

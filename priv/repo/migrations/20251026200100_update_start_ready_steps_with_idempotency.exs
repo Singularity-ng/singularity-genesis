@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.UpdateStartReadyStepsWithIdempotency do
+defmodule Singularity.Workflow.Repo.Migrations.UpdateStartReadyStepsWithIdempotency do
   @moduledoc """
   Updates start_ready_steps() to use idempotency_key for exactly-once task execution.
 
@@ -34,7 +34,7 @@ defmodule QuantumFlow.Repo.Migrations.UpdateStartReadyStepsWithIdempotency do
       WHERE id = p_run_id;
 
       -- Ensure queue exists for this workflow
-      PERFORM QuantumFlow.ensure_workflow_queue(v_workflow_slug);
+      PERFORM singularity_workflow.ensure_workflow_queue(v_workflow_slug);
 
       -- Mark ready steps as started and send tasks to pgmq
       WITH ready_steps AS (
@@ -182,7 +182,7 @@ defmodule QuantumFlow.Repo.Migrations.UpdateStartReadyStepsWithIdempotency do
       WHERE id = p_run_id;
 
       -- Ensure queue exists for this workflow
-      PERFORM QuantumFlow.ensure_workflow_queue(v_workflow_slug);
+      PERFORM singularity_workflow.ensure_workflow_queue(v_workflow_slug);
 
       -- Mark ready steps as started and send tasks to pgmq
       WITH ready_steps AS (
@@ -293,7 +293,7 @@ defmodule QuantumFlow.Repo.Migrations.UpdateStartReadyStepsWithIdempotency do
 
     execute("""
     COMMENT ON FUNCTION start_ready_steps(UUID) IS
-    'Finds steps with all dependencies completed, marks as started, creates task records, and sends messages to pgmq queue. Matches QuantumFlow architecture.'
+    'Finds steps with all dependencies completed, marks as started, creates task records, and sends messages to pgmq queue. Matches Singularity.Workflow architecture.'
     """)
   end
 end

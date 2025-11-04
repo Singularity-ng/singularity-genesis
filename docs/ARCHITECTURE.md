@@ -1,6 +1,6 @@
-# QuantumFlow Architecture
+# Singularity.Workflow Architecture
 
-QuantumFlow is an Elixir implementation of QuantumFlow's database-driven DAG execution engine. This document explains the internal architecture, design decisions, and how components interact.
+Singularity.Workflow is an Elixir implementation of Singularity.Workflow's database-driven DAG execution engine. This document explains the internal architecture, design decisions, and how components interact.
 
 ## Architecture Overview
 
@@ -29,7 +29,7 @@ graph TB
 
 ### Layer Stack
 
-QuantumFlow is organized into three layers:
+Singularity.Workflow is organized into three layers:
 
 1. **Application Layer** - Workflow definitions, user code entry points
 2. **Orchestration Layer** - DAG parsing/validation and task execution coordination
@@ -41,7 +41,7 @@ The DAG layer handles workflow definition parsing, validation, and graph analysi
 
 ### Key Modules
 
-**Singularity.Workflow.DAG.WorkflowDefinition** (`lib/QuantumFlow/dag/workflow_definition.ex`)
+**Singularity.Workflow.DAG.WorkflowDefinition** (`lib/Singularity.Workflow/dag/workflow_definition.ex`)
 - Parses JSON workflow definitions
 - Validates step structure and dependencies
 - Detects cycles to prevent infinite loops
@@ -62,7 +62,7 @@ definition = %{
 {:ok, workflow} = WorkflowDefinition.parse(definition)
 ```
 
-**Singularity.Workflow.DAG.DynamicWorkflowLoader** (`lib/QuantumFlow/dag/dynamic_workflow_loader.ex`)
+**Singularity.Workflow.DAG.DynamicWorkflowLoader** (`lib/Singularity.Workflow/dag/dynamic_workflow_loader.ex`)
 - Loads workflow definitions from modules at runtime
 - Implements dynamic behavior callbacks
 - Bridges workflow code and engine execution
@@ -104,7 +104,7 @@ The execution layer orchestrates task processing, state management, and completi
 
 ### Key Modules
 
-**Singularity.Workflow.Executor** (`lib/QuantumFlow/executor.ex`)
+**Singularity.Workflow.Executor** (`lib/Singularity.Workflow/executor.ex`)
 - Main entry point for starting and monitoring workflows
 - Delegates to DAG for definition parsing
 - Initializes workflow state in database
@@ -117,13 +117,13 @@ The execution layer orchestrates task processing, state management, and completi
 {:ok, run} = Executor.status(run_id)
 ```
 
-**Singularity.Workflow.DAG.RunInitializer** (`lib/QuantumFlow/dag/run_initializer.ex`)
+**Singularity.Workflow.DAG.RunInitializer** (`lib/Singularity.Workflow/dag/run_initializer.ex`)
 - Creates workflow_runs record
 - Initializes step_states for all workflow steps
 - Sets up step_dependencies edges
 - For map steps, creates one task per item
 
-**Singularity.Workflow.DAG.TaskExecutor** (`lib/QuantumFlow/dag/task_executor.ex`)
+**Singularity.Workflow.DAG.TaskExecutor** (`lib/Singularity.Workflow/dag/task_executor.ex`)
 - Polls pgmq queue for pending tasks
 - Executes tasks via workflow callback functions
 - Handles retries and error handling
@@ -198,7 +198,7 @@ sequenceDiagram
 
 ### Counter-Based Coordination
 
-QuantumFlow uses two counters to track completion:
+Singularity.Workflow uses two counters to track completion:
 
 ```mermaid
 %%{init: {'theme':'dark'}}%%
@@ -414,7 +414,7 @@ graph LR
 
 ## Layer 3: HTDAG Orchestration (Goal-Driven Workflows)
 
-QuantumFlow includes an optional **Hierarchical Task DAG (HTDAG)** layer for goal-driven workflow composition:
+Singularity.Workflow includes an optional **Hierarchical Task DAG (HTDAG)** layer for goal-driven workflow composition:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -457,7 +457,7 @@ QuantumFlow includes an optional **Hierarchical Task DAG (HTDAG)** layer for goa
 | Component | Purpose | Input | Output |
 |-----------|---------|-------|--------|
 | **Decomposer Function** | Custom goal → task graph logic | Goal (string) | Task Graph (JSON) |
-| **Orchestrator** | Converts task graphs to executable workflows | Task Graph | QuantumFlow Workflow |
+| **Orchestrator** | Converts task graphs to executable workflows | Task Graph | Singularity.Workflow Workflow |
 | **OrchestratorOptimizer** | Learns from execution patterns | Workflow + Metrics | Optimized Workflow |
 | **WorkflowComposer** | Unified high-level API | Goal + Decomposer + Steps | Execution Result |
 
@@ -729,21 +729,21 @@ Workflows implement `Singularity.Workflow.Executor.Workflow` behavior with callb
   # Called when any step fails
 ```
 
-## Comparison with QuantumFlow (Python)
+## Comparison with Singularity.Workflow (Python)
 
-QuantumFlow is a faithful Elixir port of QuantumFlow with identical execution semantics:
+Singularity.Workflow is a faithful Elixir port of Singularity.Workflow with identical execution semantics:
 
 ```mermaid
 %%{init: {'theme':'dark'}}%%
 graph TB
-    subgraph "QuantumFlow (Python)"
+    subgraph "Singularity.Workflow (Python)"
         PL["Python<br/>asyncio runtime"]
         PDAG["JSON parsing<br/>DFS validation"]
         PQ["pgmq-python<br/>driver"]
         PDB["PostgreSQL<br/>same schema"]
     end
 
-    subgraph "QuantumFlow (Elixir)"
+    subgraph "Singularity.Workflow (Elixir)"
         EL["Elixir<br/>BEAM VM"]
         EDAG["Module parsing<br/>DFS validation"]
         EQ["Postgrex<br/>driver"]
@@ -777,7 +777,7 @@ graph TB
 
 ### Feature Comparison
 
-| Feature | QuantumFlow | QuantumFlow |
+| Feature | Singularity.Workflow | Singularity.Workflow |
 |---------|--------|----------|
 | **DAG Parsing** | JSON parsing | Module parsing + JSON |
 | **Cycle Detection** | DFS | DFS (identical algorithm) |
@@ -789,7 +789,7 @@ graph TB
 | **Error Handling** | try/except | {:ok, result} \| {:error, reason} |
 | **Type Safety** | Type hints | Dialyzer/specs |
 
-### Why QuantumFlow Over QuantumFlow?
+### Why Singularity.Workflow Over Singularity.Workflow?
 
 ✅ **BEAM advantages:**
 - Lightweight processes (millions possible)
@@ -818,7 +818,7 @@ graph TB
 - **Bottleneck**: PostgreSQL connection pool, pgmq queue throughput
 
 ### Scalability
-- **Horizontal**: Add more QuantumFlow instances polling same pgmq queue
+- **Horizontal**: Add more Singularity.Workflow instances polling same pgmq queue
 - **Vertical**: Increase PostgreSQL resources (CPU, RAM, I/O)
 - **Maximum**: Limited by PostgreSQL capacity (10K+ tasks/second possible)
 
@@ -836,7 +836,7 @@ Possible enhancements without breaking the core architecture:
 
 ## Testing Strategy
 
-QuantumFlow uses:
+Singularity.Workflow uses:
 - **Unit tests**: SQL logic, cycle detection algorithm
 - **Integration tests**: Full workflow execution end-to-end
 - **Mock workflows**: Deterministic testing without external dependencies

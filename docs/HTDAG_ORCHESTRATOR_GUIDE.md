@@ -1,6 +1,6 @@
 # HTDAG Orchestrator Guide
 
-Comprehensive guide to QuantumFlow's Hierarchical Task Directed Acyclic Graph (HTDAG) orchestration system for goal-driven workflow execution.
+Comprehensive guide to Singularity.Workflow's Hierarchical Task Directed Acyclic Graph (HTDAG) orchestration system for goal-driven workflow execution.
 
 ## Table of Contents
 
@@ -816,5 +816,5 @@ end
 
 - [README.md](../README.md) - Project overview
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
-- [SINGULARITY_WORKFLOW_REFERENCE.md](./SINGULARITY_WORKFLOW_REFERENCE.md) - QuantumFlow comparison
+- [SINGULARITY_WORKFLOW_REFERENCE.md](./SINGULARITY_WORKFLOW_REFERENCE.md) - Singularity.Workflow comparison
 - [DYNAMIC_WORKFLOWS_GUIDE.md](./DYNAMIC_WORKFLOWS_GUIDE.md) - FlowBuilder examples

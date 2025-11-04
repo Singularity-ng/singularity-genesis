@@ -7,7 +7,7 @@ defmodule Singularity.Workflow.StepStateTest do
   @moduledoc """
   Chicago-style TDD: State-based testing for StepState schema.
 
-  Focus on counter-based coordination logic - the heart of QuantumFlow's DAG execution.
+  Focus on counter-based coordination logic - the heart of Singularity.Workflow's DAG execution.
   Tests verify final state after operations, not implementation details.
   """
 

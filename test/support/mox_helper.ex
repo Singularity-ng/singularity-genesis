@@ -10,7 +10,9 @@ defmodule Singularity.Workflow.Test.MoxHelper do
     # Define all required mocks using Mox.defmock
     # Mox is loaded as a dependency and doesn't need to be started as an application
     try do
-      Mox.defmock(Singularity.Workflow.Notifications.Mock, for: Singularity.Workflow.Notifications.Behaviour)
+      Mox.defmock(Singularity.Workflow.Notifications.Mock,
+        for: Singularity.Workflow.Notifications.Behaviour
+      )
     rescue
       _ -> :ok
     end

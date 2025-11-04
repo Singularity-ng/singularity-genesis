@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.CreateCompleteTaskFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateCompleteTaskFunction do
   @moduledoc """
   Creates complete_task() PostgreSQL function for DAG coordination.
 
@@ -9,7 +9,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateCompleteTaskFunction do
   4. Cascades to dependent steps by decrementing their remaining_deps
   5. Triggers start_ready_steps to awaken newly ready steps
 
-  Matches QuantumFlow's cascading completion mechanism.
+  Matches Singularity.Workflow's cascading completion mechanism.
   """
   use Ecto.Migration
 

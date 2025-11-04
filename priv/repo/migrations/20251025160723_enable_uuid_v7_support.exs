@@ -1,4 +1,4 @@
-defmodule QuantumFlow.Repo.Migrations.EnableUuidV7Support do
+defmodule Singularity.Workflow.Repo.Migrations.EnableUuidV7Support do
   @moduledoc """
   Placeholder migration for UUID v7 support.
 

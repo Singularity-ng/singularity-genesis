@@ -1,6 +1,6 @@
 defmodule Singularity.Workflow.Notifications.Behaviour do
   @moduledoc """
-  Behaviour definition for QuantumFlow notifications, used for testing and mocking.
+  Behaviour definition for Singularity.Workflow notifications, used for testing and mocking.
   """
 
   @callback send_with_notify(String.t(), map(), Ecto.Repo.t()) ::

@@ -1,8 +1,8 @@
 defmodule Singularity.Workflow.Worker do
   @moduledoc """
-  Compatibility layer that plugs QuantumFlow workflows into Oban workers.
+  Compatibility layer that plugs Singularity.Workflow workflows into Oban workers.
 
-  The original implementation lives alongside the QuantumFlow Elixir wrappers.
+  The original implementation lives alongside the Singularity.Workflow Elixir wrappers.
   For Observer we only need the minimal behaviour that delegates to
   `Oban.Worker` while exposing the convenience `new/2` function expected by
   Singularity job modules.

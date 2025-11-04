@@ -77,7 +77,7 @@ defmodule Singularity.Workflow do
 
   ## Architecture
 
-  singularity_workflow uses the same architecture as QuantumFlow (TypeScript):
+  singularity_workflow provides complete workflow orchestration capabilities:
 
   - **pgmq Extension** - PostgreSQL Message Queue for task coordination
   - **Database-Driven** - Task state persisted in PostgreSQL tables
@@ -160,20 +160,6 @@ defmodule Singularity.Workflow do
   - **PostgreSQL 12+**
   - **pgmq extension 1.4.4+** - `CREATE EXTENSION pgmq`
   - **Ecto & Postgrex** - For database access
-
-  ## Comparison with QuantumFlow
-
-  | Feature | QuantumFlow (TypeScript) | singularity_workflow (Elixir) |
-  |---------|---------------------|---------------------|
-  | DAG Syntax | ✅ | ✅ |
-  | pgmq Integration | ✅ | ✅ |
-  | Parallel Execution | ✅ | ✅ |
-  | Map Steps | ✅ | ✅ |
-  | Dependency Merging | ✅ | ✅ |
-  | Multi-Instance | ✅ | ✅ |
-  | Database-Driven | ✅ | ✅ |
-
-  **Result: 100% Feature Parity** 🎉
 
   See `Singularity.Workflow.Executor` for execution options and `Singularity.Workflow.DAG.WorkflowDefinition`
   for workflow syntax details.

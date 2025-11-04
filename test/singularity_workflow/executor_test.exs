@@ -67,7 +67,7 @@ defmodule Singularity.Workflow.ExecutorTest do
   - Error handling and status queries
   - Database-driven DAG coordination
 
-  NOTE: These are integration tests requiring PostgreSQL with QuantumFlow schema.
+  NOTE: These are integration tests requiring PostgreSQL with Singularity.Workflow schema.
   Tests run against real database with migrations applied.
   """
 
@@ -306,7 +306,9 @@ defmodule Singularity.Workflow.ExecutorTest do
 
       # Add steps
       {:ok, _} = Singularity.Workflow.FlowBuilder.add_step("test_dynamic_simple", "step1", [], Repo)
-      {:ok, _} = Singularity.Workflow.FlowBuilder.add_step("test_dynamic_simple", "step2", ["step1"], Repo)
+
+      {:ok, _} =
+        Singularity.Workflow.FlowBuilder.add_step("test_dynamic_simple", "step2", ["step1"], Repo)
 
       # Define step functions
       step_functions = %{
@@ -332,10 +334,17 @@ defmodule Singularity.Workflow.ExecutorTest do
     test "maps step functions correctly" do
       # Create workflow
       {:ok, _} = Singularity.Workflow.FlowBuilder.create_flow("test_dynamic_mapping", Repo)
-      {:ok, _} = Singularity.Workflow.FlowBuilder.add_step("test_dynamic_mapping", "transform", [], Repo)
 
       {:ok, _} =
-        Singularity.Workflow.FlowBuilder.add_step("test_dynamic_mapping", "validate", ["transform"], Repo)
+        Singularity.Workflow.FlowBuilder.add_step("test_dynamic_mapping", "transform", [], Repo)
+
+      {:ok, _} =
+        Singularity.Workflow.FlowBuilder.add_step(
+          "test_dynamic_mapping",
+          "validate",
+          ["transform"],
+          Repo
+        )
 
       # Define step functions with specific behavior
       step_functions = %{
@@ -365,10 +374,17 @@ defmodule Singularity.Workflow.ExecutorTest do
     test "handles missing step functions" do
       # Create workflow with more steps than functions provided
       {:ok, _} = Singularity.Workflow.FlowBuilder.create_flow("test_dynamic_missing", Repo)
-      {:ok, _} = Singularity.Workflow.FlowBuilder.add_step("test_dynamic_missing", "step_a", [], Repo)
 
       {:ok, _} =
-        Singularity.Workflow.FlowBuilder.add_step("test_dynamic_missing", "step_b", ["step_a"], Repo)
+        Singularity.Workflow.FlowBuilder.add_step("test_dynamic_missing", "step_a", [], Repo)
+
+      {:ok, _} =
+        Singularity.Workflow.FlowBuilder.add_step(
+          "test_dynamic_missing",
+          "step_b",
+          ["step_a"],
+          Repo
+        )
 
       # Only provide step_a function, missing step_b
       step_functions = %{

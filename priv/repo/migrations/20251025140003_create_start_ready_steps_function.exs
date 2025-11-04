@@ -1,11 +1,11 @@
-defmodule QuantumFlow.Repo.Migrations.CreateStartReadyStepsFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateStartReadyStepsFunction do
   @moduledoc """
   Creates start_ready_steps() PostgreSQL function for DAG coordination.
 
   This function finds steps with all dependencies completed (remaining_deps = 0)
   and marks them as 'started', making their tasks available for execution.
 
-  Matches QuantumFlow's dependency awakening mechanism.
+  Matches Singularity.Workflow's dependency awakening mechanism.
   """
   use Ecto.Migration
 

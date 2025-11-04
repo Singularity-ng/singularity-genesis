@@ -1,8 +1,8 @@
-defmodule QuantumFlow.Repo.Migrations.CreateMaybeCompleteRunFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateMaybeCompleteRunFunction do
   @moduledoc """
-  Creates QuantumFlow.maybe_complete_run() for checking and completing workflow runs.
+  Creates singularity_workflow.maybe_complete_run() for checking and completing workflow runs.
 
-  Matches QuantumFlow's implementation:
+  Matches Singularity.Workflow's implementation:
   1. Check if all steps are completed (remaining_steps = 0)
   2. If yes, mark run as completed
   3. Aggregate outputs from leaf steps (steps with no dependents) into a flat array
@@ -14,7 +14,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateMaybeCompleteRunFunction do
 
   def up do
     execute("""
-    CREATE OR REPLACE FUNCTION QuantumFlow.maybe_complete_run(p_run_id UUID)
+    CREATE OR REPLACE FUNCTION singularity_workflow.maybe_complete_run(p_run_id UUID)
     RETURNS void
     LANGUAGE plpgsql
     AS $$
@@ -56,7 +56,7 @@ defmodule QuantumFlow.Repo.Migrations.CreateMaybeCompleteRunFunction do
         AND workflow_runs.status != 'completed'
       RETURNING * INTO v_completed_run;
 
-      -- Log completion (optional: would broadcast event in QuantumFlow)
+      -- Log completion (optional: would broadcast event in Singularity.Workflow)
       IF v_completed_run.id IS NOT NULL THEN
         RAISE NOTICE 'Run completed: run_id=%, output=%',
           v_completed_run.id, v_completed_run.output;
@@ -66,12 +66,12 @@ defmodule QuantumFlow.Repo.Migrations.CreateMaybeCompleteRunFunction do
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.maybe_complete_run(UUID) IS
-    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches QuantumFlow implementation.'
+    COMMENT ON FUNCTION singularity_workflow.maybe_complete_run(UUID) IS
+    'Checks if run is complete (all steps done), marks as completed, and aggregates leaf step outputs into a flat array. Matches Singularity.Workflow implementation.'
     """)
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.maybe_complete_run(UUID)")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.maybe_complete_run(UUID)")
   end
 end

@@ -25,14 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of QuantumFlow - Elixir implementation of QuantumFlow's database-driven DAG execution
-- Complete feature parity with QuantumFlow including:
+- Initial release of Singularity.Workflow - Elixir implementation of database-driven DAG execution
+- Complete feature parity including:
   - **DAG Workflow Support**: Define workflows with explicit dependencies between steps
   - **Parallel Execution**: Automatically execute independent steps in parallel
   - **Map Steps**: Execute the same step across multiple items (map/reduce pattern)
   - **Dependency Merging**: Steps can depend on multiple other steps
   - **Database-First Coordination**: PostgreSQL + pgmq for reliable task coordination
-  - **Multi-Instance Scaling**: Multiple QuantumFlow instances can safely execute the same workflows
+  - **Multi-Instance Scaling**: Multiple Singularity.Workflow instances can safely execute the same workflows
   - **Visibility Timeout Pattern**: Automatic retry if task executor crashes
   - **Comprehensive Testing**: 160+ tests covering all execution paths
 
@@ -87,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Known Limitations (v0.1.0)
 
-- Step definitions use legacy Elixir module functions (not JSON-based like QuantumFlow)
+- Step definitions use Elixir module functions
   - Plan to support JSON workflow definitions in v0.2.0
 - Conditional step execution not yet supported
   - Plan for v0.2.0

@@ -1,8 +1,8 @@
-# QuantumFlow Reference - What's in /tmp/QuantumFlow
+# Singularity.Workflow Reference - What's in /tmp/Singularity.Workflow
 
-Complete overview of the official QuantumFlow TypeScript implementation.
+Complete overview of the official Singularity.Workflow TypeScript implementation.
 
-**Location:** `/tmp/QuantumFlow/`  
+**Location:** `/tmp/Singularity.Workflow/`  
 **What it is:** Official TypeScript workflow orchestration using PostgreSQL + pgmq  
 **Our achievement:** singularity_workflow = 100% feature parity with this
 
@@ -11,9 +11,9 @@ Complete overview of the official QuantumFlow TypeScript implementation.
 ## Directory Structure
 
 ```
-/tmp/QuantumFlow/
+/tmp/Singularity.Workflow/
 ├── pkgs/
-│   ├── cli/              # Command-line tool for QuantumFlow
+│   ├── cli/              # Command-line tool for Singularity.Workflow
 │   ├── client/           # TypeScript client library
 │   ├── core/             # ⭐ Core SQL schemas (what we matched!)
 │   ├── dsl/              # TypeScript DSL for workflow definitions
@@ -29,12 +29,12 @@ Complete overview of the official QuantumFlow TypeScript implementation.
 
 ## 1. Core SQL Schemas (`pkgs/core/schemas/`)
 
-**The heart of QuantumFlow** - All the SQL we matched in singularity_workflow:
+**The heart of Singularity.Workflow** - All the SQL we matched in singularity_workflow:
 
 | File | Size | What It Does | Our Migration |
 |------|------|--------------|---------------|
 | `0010_extensions.sql` | 89B | Installs pgmq extension | `20251025150000_add_pgmq_extension.exs` |
-| `0020_schemas.sql` | 54B | Creates QuantumFlow schema | Implicit in migrations |
+| `0020_schemas.sql` | 54B | Creates Singularity.Workflow schema | Implicit in migrations |
 | `0030_utilities.sql` | 626B | Utility functions (is_valid_slug) | `20251025160000_add_is_valid_slug_function.exs` |
 | `0040_types.sql` | 164B | Custom types | Embedded in migrations |
 | `0050_tables_definitions.sql` | 2.4K | workflows, workflow_steps, deps tables | `20251025160001_create_workflow_definition_tables.exs` |
@@ -59,7 +59,7 @@ Complete overview of the official QuantumFlow TypeScript implementation.
 ### Simple Flow (`example-flow.ts`)
 
 ```typescript
-import { Flow } from '@QuantumFlow/dsl';
+import { Flow } from '@Singularity.Workflow/dsl';
 
 export const ExampleFlow = new Flow<{ value: number }>({
   slug: 'example_flow',
@@ -185,7 +185,7 @@ export class EdgeWorker {
 
 ### Key Features
 
-| Feature | QuantumFlow Edge Worker | singularity_workflow TaskExecutor |
+| Feature | Singularity.Workflow Edge Worker | singularity_workflow TaskExecutor |
 |---------|-------------------|----------------------|
 | **Runtime** | Deno (Supabase Edge Function) | BEAM/Erlang |
 | **Polling** | `read_with_poll()` (5s default) | `read_with_poll()` (5s configurable) |
@@ -196,10 +196,10 @@ export class EdgeWorker {
 
 ### Example Usage
 
-**QuantumFlow (TypeScript):**
+**Singularity.Workflow (TypeScript):**
 
 ```typescript
-import { EdgeWorker } from '@QuantumFlow/edge-worker';
+import { EdgeWorker } from '@Singularity.Workflow/edge-worker';
 import { MyFlow } from './flows.js';
 
 EdgeWorker.start(MyFlow, {
@@ -229,7 +229,7 @@ EdgeWorker.start(MyFlow, {
 ### Documentation Structure
 
 ```
-/tmp/QuantumFlow/pkgs/website/src/content/docs/
+/tmp/Singularity.Workflow/pkgs/website/src/content/docs/
 ├── index.mdx                    # Homepage
 ├── get-started/                 # Getting started guides
 ├── concepts/                    # Core concepts (DAGs, map steps, etc.)
@@ -258,7 +258,7 @@ EdgeWorker.start(MyFlow, {
 **What it is:** TypeScript DSL for defining workflows with full type safety
 
 ```typescript
-import { Flow } from '@QuantumFlow/dsl';
+import { Flow } from '@Singularity.Workflow/dsl';
 
 // Type-safe workflow definition
 const MyFlow = new Flow<{ userId: string }>({
@@ -285,7 +285,7 @@ const MyFlow = new Flow<{ userId: string }>({
 **What it is:** TypeScript client for starting workflows and querying status
 
 ```typescript
-import { createClient } from '@QuantumFlow/client';
+import { createClient } from '@Singularity.Workflow/client';
 
 const client = createClient(supabase);
 
@@ -302,12 +302,12 @@ const status = await client.getStatus(runId);
 
 ## 7. CLI (`pkgs/cli/`)
 
-**What it is:** Command-line tool for QuantumFlow operations
+**What it is:** Command-line tool for Singularity.Workflow operations
 
 ```bash
-npx QuantumFlow install    # Install SQL schemas
-npx QuantumFlow migrate    # Run migrations
-npx QuantumFlow compile    # Compile DSL to SQL
+npx Singularity.Workflow install    # Install SQL schemas
+npx Singularity.Workflow migrate    # Run migrations
+npx Singularity.Workflow compile    # Compile DSL to SQL
 ```
 
 **singularity_workflow Equivalent:** Mix tasks
@@ -319,9 +319,9 @@ mix test              # Run tests
 
 ---
 
-## Key Differences: QuantumFlow vs singularity_workflow
+## Key Differences: Singularity.Workflow vs singularity_workflow
 
-| Aspect | QuantumFlow | singularity_workflow |
+| Aspect | Singularity.Workflow | singularity_workflow |
 |--------|--------|-----------|
 | **Language** | TypeScript | Elixir |
 | **Runtime** | Deno/Node.js | BEAM/Erlang |
@@ -338,7 +338,7 @@ mix test              # Run tests
 
 ## Summary
 
-**What we learned from /tmp/QuantumFlow:**
+**What we learned from /tmp/Singularity.Workflow:**
 
 1. ✅ **SQL Core** - Matched all 22 SQL schema files
 2. ✅ **Example Flows** - Understood patterns (simple, map, wide)
@@ -348,12 +348,12 @@ mix test              # Run tests
 6. ✅ **Client** - Created Executor + Ecto query API
 7. ✅ **CLI** - Created Mix tasks
 
-**Result:** singularity_workflow = 100% feature parity with QuantumFlow! 🎯
+**Result:** singularity_workflow = 100% feature parity with Singularity.Workflow! 🎯
 
 ---
 
 **References:**
 
-- QuantumFlow GitHub: https://github.com/QuantumFlow/QuantumFlow
-- QuantumFlow Website: https://Singularity.Workflow.dev
+- Singularity.Workflow GitHub: https://github.com/Singularity.Workflow/Singularity.Workflow
+- Singularity.Workflow Website: https://Singularity.Workflow.dev
 - singularity_workflow: Our standalone Elixir implementation

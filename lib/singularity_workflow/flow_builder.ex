@@ -71,7 +71,7 @@ defmodule Singularity.Workflow.FlowBuilder do
     - `repo` - Ecto repo module
     - `opts` - Options:
       - `:max_attempts` - Default retry count for all steps (default: 3)
-      - `:timeout` - Default timeout in seconds (default: 60, matches QuantumFlow)
+      - `:timeout` - Default timeout in seconds (default: 60, matches Singularity.Workflow)
 
   ## Returns
 

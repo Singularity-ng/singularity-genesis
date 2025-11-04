@@ -1,17 +1,17 @@
-defmodule QuantumFlow.Repo.Migrations.CreateSetVtBatchFunction do
+defmodule Singularity.Workflow.Repo.Migrations.CreateSetVtBatchFunction do
   @moduledoc """
-  Creates QuantumFlow.set_vt_batch() for batch visibility timeout updates.
+  Creates singularity_workflow.set_vt_batch() for batch visibility timeout updates.
 
-  Matches QuantumFlow's implementation - batch-update visibility timeouts for multiple
+  Matches Singularity.Workflow's implementation - batch-update visibility timeouts for multiple
   messages in one operation. Used by start_tasks() to set task timeouts efficiently.
 
-  Note: pgmq extension doesn't provide set_vt_batch natively, so QuantumFlow implements it.
+  Note: pgmq extension doesn't provide set_vt_batch natively, so Singularity.Workflow implements it.
   """
   use Ecto.Migration
 
   def up do
     execute("""
-    CREATE OR REPLACE FUNCTION QuantumFlow.set_vt_batch(
+    CREATE OR REPLACE FUNCTION singularity_workflow.set_vt_batch(
       queue_name TEXT,
       msg_ids BIGINT[],
       vt_offsets INTEGER[]
@@ -62,12 +62,12 @@ defmodule QuantumFlow.Repo.Migrations.CreateSetVtBatchFunction do
     """)
 
     execute("""
-    COMMENT ON FUNCTION QuantumFlow.set_vt_batch(TEXT, BIGINT[], INTEGER[]) IS
-    'Batch-update visibility timeouts for multiple pgmq messages. Matches QuantumFlow implementation.'
+    COMMENT ON FUNCTION singularity_workflow.set_vt_batch(TEXT, BIGINT[], INTEGER[]) IS
+    'Batch-update visibility timeouts for multiple pgmq messages. Matches Singularity.Workflow implementation.'
     """)
   end
 
   def down do
-    execute("DROP FUNCTION IF EXISTS QuantumFlow.set_vt_batch(TEXT, BIGINT[], INTEGER[])")
+    execute("DROP FUNCTION IF EXISTS singularity_workflow.set_vt_batch(TEXT, BIGINT[], INTEGER[])")
   end
 end

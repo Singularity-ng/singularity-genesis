@@ -54,7 +54,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutorTest do
   Comprehensive TaskExecutor tests covering:
   - Chicago-style TDD (state-based testing)
   - Task polling and claiming via pgmq
-  - Execution loop with QuantumFlow PostgreSQL functions
+  - Execution loop with Singularity.Workflow PostgreSQL functions
   - Error handling and retries
   - Timeout management
   """

@@ -1,6 +1,6 @@
-# Contributing to QuantumFlow
+# Contributing to Singularity.Workflow
 
-Thank you for your interest in QuantumFlow! This document provides guidelines for contributing to the project.
+Thank you for your interest in Singularity.Workflow! This document provides guidelines for contributing to the project.
 
 ## Getting Started
 
@@ -48,7 +48,7 @@ mix test
 mix test
 
 # Run specific test file
-mix test test/QuantumFlow/executor_test.exs
+mix test test/singularity_workflow/executor_test.exs
 
 # Run tests with coverage report
 mix test.coverage
@@ -59,7 +59,7 @@ mix test.watch
 
 ### Code Quality
 
-QuantumFlow enforces high code quality standards:
+Singularity.Workflow enforces high code quality standards:
 
 ```bash
 # Run all quality checks (recommended before committing)
@@ -75,7 +75,7 @@ mix deps.audit          # Check dependencies for vulnerabilities
 
 ### Code Style
 
-QuantumFlow follows standard Elixir conventions:
+Singularity.Workflow follows standard Elixir conventions:
 
 1. **Formatting**: Run `mix format` before committing
 2. **Line Length**: Maximum 100 characters (enforced in .formatter.exs)
@@ -138,7 +138,7 @@ All code contributions must include:
 
 ### Database-First Design
 
-QuantumFlow uses PostgreSQL as the source of truth. When adding features:
+Singularity.Workflow uses PostgreSQL as the source of truth. When adding features:
 
 1. **Schema Changes**: Create migrations for all schema additions
 2. **SQL Functions**: Complex logic lives in PostgreSQL functions (for atomicity)
@@ -186,7 +186,7 @@ When working with workflows:
 
 ```
 singularity_workflow/
-├── lib/QuantumFlow/
+├── lib/singularity_workflow/
 │   ├── executor.ex          # Main entry point
 │   ├── flow_builder.ex      # Dynamic workflow API
 │   ├── repo.ex              # Ecto repository
@@ -200,7 +200,7 @@ singularity_workflow/
 ├── priv/repo/
 │   └── migrations/          # Database migrations
 ├── test/
-│   ├── QuantumFlow/
+│   ├── singularity_workflow/
 │   │   └── *_test.exs       # Unit/integration tests
 │   └── support/
 │       └── sql_case.ex      # Test helpers
@@ -324,7 +324,7 @@ Reviewers may request changes. Please:
 
 ## Release Process
 
-QuantumFlow follows [Semantic Versioning](https://semver.org/):
+Singularity.Workflow follows [Semantic Versioning](https://semver.org/):
 
 - **0.1.0** (current): Initial release, API may change
 - **0.x.0**: Minor versions (new features, API additions)
@@ -348,4 +348,4 @@ Only maintainers can publish releases:
 - **Architecture questions**: See [ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - **Issue or PR**: Open a GitHub issue
 
-Thank you for contributing to QuantumFlow!
+Thank you for contributing to Singularity.Workflow!

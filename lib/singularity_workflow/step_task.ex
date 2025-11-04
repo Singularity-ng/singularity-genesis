@@ -3,7 +3,7 @@ defmodule Singularity.Workflow.StepTask do
   Ecto schema for workflow_step_tasks table.
 
   Tracks individual task executions within a step - the execution layer for DAG workflows.
-  Matches QuantumFlow's step_tasks table design.
+  Matches Singularity.Workflow's step_tasks table design.
 
   ## Task Lifecycle with Retry Logic
 
