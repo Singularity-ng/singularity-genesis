@@ -51,7 +51,10 @@ defmodule Singularity.Workflow.WorkflowComposerTest do
       assert result.results["task2"] == "result2"
 
       # Snapshot for execution result structure regression detection
-      Singularity.Workflow.Test.Snapshot.assert_snapshot(result, "workflow_composer_execution_result")
+      Singularity.Workflow.Test.Snapshot.assert_snapshot(
+        result,
+        "workflow_composer_execution_result"
+      )
     end
 
     test "handles decomposition failure" do
@@ -112,7 +115,10 @@ defmodule Singularity.Workflow.WorkflowComposerTest do
         {:ok, %{name: "test_workflow", steps: [], max_parallel: 10}}
       end)
 
-      Mox.stub(Singularity.Workflow.Orchestrator.Executor.Mock, :execute_workflow, fn _, _, _, opts ->
+      Mox.stub(Singularity.Workflow.Orchestrator.Executor.Mock, :execute_workflow, fn _,
+                                                                                      _,
+                                                                                      _,
+                                                                                      opts ->
         assert Keyword.get(opts, :monitor) == true
         {:ok, %{success: true}}
       end)

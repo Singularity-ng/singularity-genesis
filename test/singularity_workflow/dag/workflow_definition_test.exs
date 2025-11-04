@@ -159,7 +159,10 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinitionTest do
         dependencies: definition.dependencies
       }
 
-      Singularity.Workflow.Test.Snapshot.assert_snapshot(snapshot_data, "workflow_definition_parallel_dag")
+      Singularity.Workflow.Test.Snapshot.assert_snapshot(
+        snapshot_data,
+        "workflow_definition_parallel_dag"
+      )
     end
   end
 

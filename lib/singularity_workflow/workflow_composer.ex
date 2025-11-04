@@ -169,10 +169,18 @@ defmodule Singularity.Workflow.WorkflowComposer do
     _workflow_name = Keyword.get(opts, :workflow_name, generate_workflow_name(goal))
 
     optimize =
-      Keyword.get(opts, :optimize, Singularity.Workflow.Orchestrator.Config.feature_enabled?(:optimization))
+      Keyword.get(
+        opts,
+        :optimize,
+        Singularity.Workflow.Orchestrator.Config.feature_enabled?(:optimization)
+      )
 
     monitor =
-      Keyword.get(opts, :monitor, Singularity.Workflow.Orchestrator.Config.feature_enabled?(:monitoring))
+      Keyword.get(
+        opts,
+        :monitor,
+        Singularity.Workflow.Orchestrator.Config.feature_enabled?(:monitoring)
+      )
 
     Logger.info("Composing workflow from goal: #{inspect(goal)}")
 
@@ -436,7 +444,9 @@ defmodule Singularity.Workflow.WorkflowComposer do
     Logger.info("Executing workflow with monitoring: #{workflow.name}")
 
     # Use HTDAG executor for enhanced monitoring
-    Singularity.Workflow.Orchestrator.Executor.execute_workflow(workflow, %{goal: goal}, repo, monitor: true)
+    Singularity.Workflow.Orchestrator.Executor.execute_workflow(workflow, %{goal: goal}, repo,
+      monitor: true
+    )
   end
 
   defp execute_workflow(workflow, goal, false, repo) do

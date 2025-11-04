@@ -39,7 +39,10 @@ defmodule Singularity.Workflow.IdempotencyTest do
       started_at: DateTime.utc_now()
     }
 
-    Repo.insert!(%Singularity.Workflow.WorkflowRun{} |> Singularity.Workflow.WorkflowRun.changeset(run_attrs))
+    Repo.insert!(
+      %Singularity.Workflow.WorkflowRun{}
+      |> Singularity.Workflow.WorkflowRun.changeset(run_attrs)
+    )
   end
 
   describe "StepTask.compute_idempotency_key/4" do
@@ -166,7 +169,11 @@ defmodule Singularity.Workflow.IdempotencyTest do
         remaining_steps: 1
       }
 
-      run = Repo.insert!(%Singularity.Workflow.WorkflowRun{} |> Singularity.Workflow.WorkflowRun.changeset(run_attrs))
+      run =
+        Repo.insert!(
+          %Singularity.Workflow.WorkflowRun{}
+          |> Singularity.Workflow.WorkflowRun.changeset(run_attrs)
+        )
 
       # Insert first task
       task1 =
@@ -207,7 +214,11 @@ defmodule Singularity.Workflow.IdempotencyTest do
         remaining_steps: 1
       }
 
-      run = Repo.insert!(%Singularity.Workflow.WorkflowRun{} |> Singularity.Workflow.WorkflowRun.changeset(run_attrs))
+      run =
+        Repo.insert!(
+          %Singularity.Workflow.WorkflowRun{}
+          |> Singularity.Workflow.WorkflowRun.changeset(run_attrs)
+        )
 
       # Insert first task
       task1 =

@@ -5,7 +5,13 @@ defmodule Singularity.Workflow.OrchestratorNotificationsTest do
 
   setup do
     Singularity.Workflow.Test.MoxHelper.setup_mox()
-    Application.put_env(:singularity_workflow, :notifications_impl, Singularity.Workflow.Notifications.Mock)
+
+    Application.put_env(
+      :singularity_workflow,
+      :notifications_impl,
+      Singularity.Workflow.Notifications.Mock
+    )
+
     Mox.set_mox_global()
     :ok
   end
@@ -101,7 +107,10 @@ defmodule Singularity.Workflow.OrchestratorNotificationsTest do
         assert data.metrics.execution_time == 1500
 
         # Snapshot the notification payload for structure regression detection
-        Singularity.Workflow.Test.Snapshot.assert_snapshot(data, "orchestrator_notifications_performance")
+        Singularity.Workflow.Test.Snapshot.assert_snapshot(
+          data,
+          "orchestrator_notifications_performance"
+        )
 
         {:ok, "message_perf"}
       end)

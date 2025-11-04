@@ -24,7 +24,8 @@ defmodule Singularity.Workflow.Orchestrator.Schemas do
       field :task_graph, :map
       field :max_depth, :integer, default: 5
 
-      has_many :workflows, Singularity.Workflow.Orchestrator.Schemas.Workflow, foreign_key: :task_graph_id
+      has_many :workflows, Singularity.Workflow.Orchestrator.Schemas.Workflow,
+        foreign_key: :task_graph_id
 
       timestamps()
     end
@@ -60,7 +61,8 @@ defmodule Singularity.Workflow.Orchestrator.Schemas do
       belongs_to :task_graph, Singularity.Workflow.Orchestrator.Schemas.TaskGraph,
         foreign_key: :task_graph_id
 
-      has_many :executions, Singularity.Workflow.Orchestrator.Schemas.Execution, foreign_key: :workflow_id
+      has_many :executions, Singularity.Workflow.Orchestrator.Schemas.Execution,
+        foreign_key: :workflow_id
 
       has_many :performance_metrics, Singularity.Workflow.Orchestrator.Schemas.PerformanceMetric,
         foreign_key: :workflow_id
@@ -107,7 +109,8 @@ defmodule Singularity.Workflow.Orchestrator.Schemas do
       field :result, :map
       field :error_message, :string
 
-      belongs_to :workflow, Singularity.Workflow.Orchestrator.Schemas.Workflow, foreign_key: :workflow_id
+      belongs_to :workflow, Singularity.Workflow.Orchestrator.Schemas.Workflow,
+        foreign_key: :workflow_id
 
       has_many :task_executions, Singularity.Workflow.Orchestrator.Schemas.TaskExecution,
         foreign_key: :execution_id
@@ -157,8 +160,11 @@ defmodule Singularity.Workflow.Orchestrator.Schemas do
       field :error_message, :string
       field :retry_count, :integer, default: 0
 
-      belongs_to :execution, Singularity.Workflow.Orchestrator.Schemas.Execution, foreign_key: :execution_id
-      has_many :events, Singularity.Workflow.Orchestrator.Schemas.Event, foreign_key: :task_execution_id
+      belongs_to :execution, Singularity.Workflow.Orchestrator.Schemas.Execution,
+        foreign_key: :execution_id
+
+      has_many :events, Singularity.Workflow.Orchestrator.Schemas.Event,
+        foreign_key: :task_execution_id
 
       timestamps()
     end
@@ -199,7 +205,8 @@ defmodule Singularity.Workflow.Orchestrator.Schemas do
       field :event_data, :map
       field :timestamp, :utc_datetime
 
-      belongs_to :execution, Singularity.Workflow.Orchestrator.Schemas.Execution, foreign_key: :execution_id
+      belongs_to :execution, Singularity.Workflow.Orchestrator.Schemas.Execution,
+        foreign_key: :execution_id
 
       belongs_to :task_execution, Singularity.Workflow.Orchestrator.Schemas.TaskExecution,
         foreign_key: :task_execution_id
@@ -245,7 +252,8 @@ defmodule Singularity.Workflow.Orchestrator.Schemas do
       field :context, :map
       field :timestamp, :utc_datetime
 
-      belongs_to :workflow, Singularity.Workflow.Orchestrator.Schemas.Workflow, foreign_key: :workflow_id
+      belongs_to :workflow, Singularity.Workflow.Orchestrator.Schemas.Workflow,
+        foreign_key: :workflow_id
 
       timestamps()
     end

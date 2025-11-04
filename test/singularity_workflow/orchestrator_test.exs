@@ -31,7 +31,10 @@ defmodule Singularity.Workflow.OrchestratorTest do
       assert tasks["task3"].depends_on == ["task2"]
 
       # Snapshot for complete structure regression detection
-      Singularity.Workflow.Test.Snapshot.assert_snapshot(task_graph, "orchestrator_decompose_goal_linear")
+      Singularity.Workflow.Test.Snapshot.assert_snapshot(
+        task_graph,
+        "orchestrator_decompose_goal_linear"
+      )
     end
 
     test "handles decomposer errors" do
@@ -158,7 +161,12 @@ defmodule Singularity.Workflow.OrchestratorTest do
       end)
 
       {:ok, result} =
-        Orchestrator.execute_goal("Test goal", decomposer, step_functions, Singularity.Workflow.Repo)
+        Orchestrator.execute_goal(
+          "Test goal",
+          decomposer,
+          step_functions,
+          Singularity.Workflow.Repo
+        )
 
       assert result.success == true
       assert result.results["task1"] == "result1"
@@ -170,7 +178,12 @@ defmodule Singularity.Workflow.OrchestratorTest do
       step_functions = %{}
 
       {:error, :decomposition_failed} =
-        Orchestrator.execute_goal("Invalid goal", decomposer, step_functions, Singularity.Workflow.Repo)
+        Orchestrator.execute_goal(
+          "Invalid goal",
+          decomposer,
+          step_functions,
+          Singularity.Workflow.Repo
+        )
     end
 
     test "handles workflow creation failure" do
@@ -182,7 +195,12 @@ defmodule Singularity.Workflow.OrchestratorTest do
       step_functions = %{}
 
       {:error, %RuntimeError{}} =
-        Orchestrator.execute_goal("Test goal", decomposer, step_functions, Singularity.Workflow.Repo)
+        Orchestrator.execute_goal(
+          "Test goal",
+          decomposer,
+          step_functions,
+          Singularity.Workflow.Repo
+        )
     end
   end
 

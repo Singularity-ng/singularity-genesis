@@ -30,9 +30,9 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
         end)
 
         Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :update_execution_status, fn _,
-                                                                                        _,
-                                                                                        _,
-                                                                                        _ ->
+                                                                                                 _,
+                                                                                                 _,
+                                                                                                 _ ->
           {:ok, %{id: "exec_123", status: "completed"}}
         end)
 
@@ -65,13 +65,14 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
         end)
 
         Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :update_execution_status, fn _,
-                                                                                        _,
-                                                                                        _,
-                                                                                        _ ->
+                                                                                                 _,
+                                                                                                 _,
+                                                                                                 _ ->
           {:ok, %{id: "exec_123", status: "failed"}}
         end)
 
-        {:error, :execution_failed} = Executor.execute_workflow(workflow, context, Singularity.Workflow.Repo)
+        {:error, :execution_failed} =
+          Executor.execute_workflow(workflow, context, Singularity.Workflow.Repo)
       end
 
       test "handles execution record creation failure" do
@@ -88,7 +89,8 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
           {:error, :database_error}
         end)
 
-        {:error, :database_error} = Executor.execute_workflow(workflow, context, Singularity.Workflow.Repo)
+        {:error, :database_error} =
+          Executor.execute_workflow(workflow, context, Singularity.Workflow.Repo)
       end
     end
 
@@ -105,18 +107,21 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
         context = %{goal: "Build auth system"}
         execution = %{id: "exec_123", execution_id: "exec_123"}
 
-        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :create_task_execution, fn _, _ ->
+        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :create_task_execution, fn _,
+                                                                                               _ ->
           {:ok, %{id: "task_exec_123", task_id: "task1", status: "pending"}}
         end)
 
-        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :update_task_execution_status, fn _,
-                                                                                             _,
-                                                                                             _,
-                                                                                             _ ->
-          {:ok, %{id: "task_exec_123", status: "completed"}}
-        end)
+        Mox.stub(
+          Singularity.Workflow.Orchestrator.Repository.Mock,
+          :update_task_execution_status,
+          fn _, _, _, _ ->
+            {:ok, %{id: "task_exec_123", status: "completed"}}
+          end
+        )
 
-        {:ok, result} = Executor.execute_task(task_config, context, execution, Singularity.Workflow.Repo)
+        {:ok, result} =
+          Executor.execute_task(task_config, context, execution, Singularity.Workflow.Repo)
 
         assert result == "result1"
       end
@@ -133,16 +138,18 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
         context = %{goal: "Build auth system"}
         execution = %{id: "exec_123", execution_id: "exec_123"}
 
-        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :create_task_execution, fn _, _ ->
+        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :create_task_execution, fn _,
+                                                                                               _ ->
           {:ok, %{id: "task_exec_123", task_id: "task1", status: "pending"}}
         end)
 
-        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :update_task_execution_status, fn _,
-                                                                                             _,
-                                                                                             _,
-                                                                                             _ ->
-          {:ok, %{id: "task_exec_123", status: "failed"}}
-        end)
+        Mox.stub(
+          Singularity.Workflow.Orchestrator.Repository.Mock,
+          :update_task_execution_status,
+          fn _, _, _, _ ->
+            {:ok, %{id: "task_exec_123", status: "failed"}}
+          end
+        )
 
         {:error, :task_failed} =
           Executor.execute_task(task_config, context, execution, Singularity.Workflow.Repo)
@@ -161,16 +168,18 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
         context = %{goal: "Build auth system"}
         execution = %{id: "exec_123", execution_id: "exec_123"}
 
-        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :create_task_execution, fn _, _ ->
+        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :create_task_execution, fn _,
+                                                                                               _ ->
           {:ok, %{id: "task_exec_123", task_id: "task1", status: "pending"}}
         end)
 
-        Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :update_task_execution_status, fn _,
-                                                                                             _,
-                                                                                             _,
-                                                                                             _ ->
-          {:ok, %{id: "task_exec_123", status: "failed"}}
-        end)
+        Mox.stub(
+          Singularity.Workflow.Orchestrator.Repository.Mock,
+          :update_task_execution_status,
+          fn _, _, _, _ ->
+            {:ok, %{id: "task_exec_123", status: "failed"}}
+          end
+        )
 
         {:error, :max_retries_exceeded} =
           Executor.execute_task(task_config, context, execution, Singularity.Workflow.Repo)
@@ -217,7 +226,8 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
           {:error, :not_found}
         end)
 
-        {:error, :not_found} = Executor.get_execution_status("nonexistent", Singularity.Workflow.Repo)
+        {:error, :not_found} =
+          Executor.get_execution_status("nonexistent", Singularity.Workflow.Repo)
       end
     end
 
@@ -234,13 +244,14 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
         end)
 
         Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :update_execution_status, fn _,
-                                                                                        _,
-                                                                                        _,
-                                                                                        _ ->
+                                                                                                 _,
+                                                                                                 _,
+                                                                                                 _ ->
           {:ok, %{id: "exec_123", status: "cancelled"}}
         end)
 
-        :ok = Executor.cancel_execution("exec_123", Singularity.Workflow.Repo, reason: "User requested")
+        :ok =
+          Executor.cancel_execution("exec_123", Singularity.Workflow.Repo, reason: "User requested")
       end
 
       test "handles execution not found" do
@@ -262,7 +273,8 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
           {:ok, execution}
         end)
 
-        {:error, :execution_not_running} = Executor.cancel_execution("exec_123", Singularity.Workflow.Repo)
+        {:error, :execution_not_running} =
+          Executor.cancel_execution("exec_123", Singularity.Workflow.Repo)
       end
 
       test "force cancels non-running execution" do
@@ -277,9 +289,9 @@ if System.get_env("SINGULARITY_WORKFLOW_SKIP_DB") != "1" do
         end)
 
         Mox.stub(Singularity.Workflow.Orchestrator.Repository.Mock, :update_execution_status, fn _,
-                                                                                        _,
-                                                                                        _,
-                                                                                        _ ->
+                                                                                                 _,
+                                                                                                 _,
+                                                                                                 _ ->
           {:ok, %{id: "exec_123", status: "cancelled"}}
         end)
 
