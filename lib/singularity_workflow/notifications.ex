@@ -11,6 +11,12 @@ defmodule Singularity.Workflow.Notifications.Behaviour do
   @callback unlisten(pid(), Ecto.Repo.t()) :: :ok | {:error, any()}
 
   @callback notify_only(String.t(), String.t(), Ecto.Repo.t()) :: :ok | {:error, any()}
+
+  @callback receive_message(String.t(), Ecto.Repo.t(), keyword()) ::
+              {:ok, list()} | {:ok, []} | {:error, any()}
+
+  @callback acknowledge(String.t(), String.t(), Ecto.Repo.t()) ::
+              :ok | {:error, any()}
 end
 
 defmodule Singularity.Workflow.Notifications do
@@ -258,6 +264,221 @@ defmodule Singularity.Workflow.Notifications do
     end
   end
 
+  @doc """
+  Receive messages from a PGMQ queue.
+
+  Reads messages from the queue with visibility timeout, making them temporarily
+  invisible to other consumers while being processed.
+
+  ## Parameters
+
+  - `queue_name` - PGMQ queue name
+  - `repo` - Ecto repository
+  - `opts` - Options:
+    - `:limit` - Maximum number of messages to read (default: 10)
+    - `:visibility_timeout` - Visibility timeout in seconds (default: 30)
+
+  ## Returns
+
+  - `{:ok, messages}` - List of messages (empty list if no messages)
+  - `{:error, reason}` - Read failed
+
+  ## Message Format
+
+  Each message is a map with:
+  - `:id` - Message ID (string)
+  - `:workflow_id` - Workflow ID if applicable
+  - `:queue_name` - Queue name
+  - `:message_id` - PGMQ message ID
+  - `:payload` - Message payload (decoded JSON)
+
+  ## Example
+
+      {:ok, messages} = Singularity.Workflow.Notifications.receive_message(
+        "genesis_rule_updates",
+        Repo,
+        limit: 10,
+        visibility_timeout: 30
+      )
+
+      Enum.each(messages, fn msg ->
+        process_message(msg)
+        Singularity.Workflow.Notifications.acknowledge(
+          msg.queue_name,
+          msg.message_id,
+          Repo
+        )
+      end)
+
+  ## Logging
+
+  Message reads are logged at `:debug` level with message count.
+  """
+  @spec receive_message(String.t(), Ecto.Repo.t(), keyword()) ::
+          {:ok, list()} | {:ok, []} | {:error, any()}
+  def receive_message(queue_name, repo, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 10)
+    visibility_timeout = Keyword.get(opts, :visibility_timeout, 30)
+
+    try do
+      # Ensure queue exists
+      case ensure_queue(queue_name, repo) do
+        :ok ->
+          # Read messages from PGMQ
+          # PGMQ read_messages signature: read_messages(repo, queue_name, visibility_timeout, limit)
+          case Pgmq.read_messages(repo, queue_name, visibility_timeout, limit) do
+            {:ok, messages} when is_list(messages) ->
+              formatted_messages =
+                Enum.map(messages, fn %Pgmq.Message{id: msg_id, body: body} ->
+                  decoded_payload =
+                    case Jason.decode(body) do
+                      {:ok, decoded} -> decoded
+                      {:error, _} -> %{"raw" => body}
+                    end
+
+                  %{
+                    id: Ecto.UUID.generate(),
+                    workflow_id: Map.get(decoded_payload, "workflow_id") ||
+                                 Map.get(decoded_payload, :workflow_id) ||
+                                 Ecto.UUID.generate(),
+                    queue_name: queue_name,
+                    message_id: Integer.to_string(msg_id),
+                    payload: decoded_payload
+                  }
+                end)
+
+              Logger.debug("Received messages from queue",
+                queue: queue_name,
+                count: length(formatted_messages),
+                limit: limit
+              )
+
+              {:ok, formatted_messages}
+
+            {:ok, nil} ->
+              {:ok, []}
+
+            {:error, reason} ->
+              Logger.error("Failed to receive messages from queue",
+                queue: queue_name,
+                error: inspect(reason)
+              )
+
+              {:error, reason}
+          end
+
+        {:error, reason} ->
+          Logger.error("Failed to ensure queue exists",
+            queue: queue_name,
+            error: inspect(reason)
+          )
+
+          {:error, reason}
+      end
+    rescue
+      error ->
+        Logger.error("Exception while receiving messages",
+          queue: queue_name,
+          error: inspect(error)
+        )
+
+        {:error, error}
+    end
+  end
+
+  @doc """
+  Acknowledge (delete) a message after successful processing.
+
+  Removes the message from the queue after it has been successfully processed.
+  This should be called after processing to prevent the message from being redelivered.
+
+  ## Parameters
+
+  - `queue_name` - PGMQ queue name
+  - `message_id` - Message ID (string) from receive_message
+  - `repo` - Ecto repository
+
+  ## Returns
+
+  - `:ok` - Message acknowledged/deleted
+  - `{:error, reason}` - Acknowledge failed
+
+  ## Example
+
+      {:ok, messages} = Singularity.Workflow.Notifications.receive_message(
+        "genesis_rule_updates",
+        Repo
+      )
+
+      Enum.each(messages, fn msg ->
+        case process_message(msg.payload) do
+          :ok ->
+            Singularity.Workflow.Notifications.acknowledge(
+              msg.queue_name,
+              msg.message_id,
+              Repo
+            )
+
+          {:error, reason} ->
+            Logger.error("Failed to process message", error: reason)
+            # Message will become visible again after visibility timeout
+        end
+      end)
+
+  ## Logging
+
+  Message acknowledgments are logged at `:debug` level.
+  """
+  @spec acknowledge(String.t(), String.t(), Ecto.Repo.t()) :: :ok | {:error, any()}
+  def acknowledge(queue_name, message_id, repo) when is_binary(message_id) do
+    try do
+      # Convert string message_id to integer
+      msg_id_int =
+        case Integer.parse(message_id) do
+          {id, _} -> id
+          :error -> raise ArgumentError, "Invalid message_id: #{message_id}"
+        end
+
+      # Delete the message from PGMQ
+      case Pgmq.delete_messages(repo, queue_name, [msg_id_int]) do
+        :ok ->
+          Logger.debug("Message acknowledged",
+            queue: queue_name,
+            message_id: message_id
+          )
+
+          :ok
+
+        {:error, reason} ->
+          Logger.error("Failed to acknowledge message",
+            queue: queue_name,
+            message_id: message_id,
+            error: inspect(reason)
+          )
+
+          {:error, reason}
+      end
+    rescue
+      error ->
+        Logger.error("Exception while acknowledging message",
+          queue: queue_name,
+          message_id: message_id,
+          error: inspect(error)
+        )
+
+        {:error, error}
+    end
+  end
+
+  def acknowledge(_queue_name, message_id, _repo) do
+    Logger.error("Invalid message_id type for acknowledge",
+      message_id: inspect(message_id),
+      expected: "binary (string)"
+    )
+
+    {:error, :invalid_message_id}
+  end
+
   # Private: Send message via PGMQ
   defp send_pgmq_message(queue_name, message, repo) when is_binary(queue_name) do
     with {:ok, json} <- encode_message(message),
@@ -320,7 +541,28 @@ defmodule Singularity.Workflow.Notifications do
     {:error, :queue_create_failed}
   end
 
-  defp ensure_queue(queue_name, repo) do
+  @doc """
+  Ensure a PGMQ queue exists, creating it if necessary.
+
+  This is a helper function that can be used to guarantee a queue exists
+  before reading from it. It's safe to call multiple times.
+
+  ## Parameters
+
+  - `queue_name` - PGMQ queue name
+  - `repo` - Ecto repository
+
+  ## Returns
+
+  - `:ok` - Queue exists or was created
+  - `{:error, reason}` - Failed to create queue
+
+  ## Example
+
+      :ok = Singularity.Workflow.Notifications.ensure_queue("my_queue", Repo)
+  """
+  @spec ensure_queue(String.t(), Ecto.Repo.t()) :: :ok | {:error, any()}
+  def ensure_queue(queue_name, repo) do
     try do
       :ok = Pgmq.create_queue(repo, queue_name)
     rescue
