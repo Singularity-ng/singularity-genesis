@@ -38,7 +38,10 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
   @type step_metadata :: %{
           initial_tasks: integer(),
           timeout: integer() | nil,
-          max_attempts: integer()
+          max_attempts: integer(),
+          execution: :sync | :oban | :distributed,
+          resources: keyword(),
+          queue: atom() | nil
         }
 
   @type step_definition :: {atom(), function(), keyword()}
@@ -128,11 +131,17 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
             initial_tasks = Keyword.get(opts, :initial_tasks, 1)
             timeout = Keyword.get(opts, :timeout)
             max_attempts = Keyword.get(opts, :max_attempts, 3)
+            execution = Keyword.get(opts, :execution, :sync)
+            resources = Keyword.get(opts, :resources, [])
+            queue = Keyword.get(opts, :queue)
 
             step_meta = %{
               initial_tasks: initial_tasks,
               timeout: timeout,
-              max_attempts: max_attempts
+              max_attempts: max_attempts,
+              execution: execution,
+              resources: resources,
+              queue: queue
             }
 
             {
@@ -149,7 +158,10 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
             step_meta = %{
               initial_tasks: 1,
               timeout: nil,
-              max_attempts: 3
+              max_attempts: 3,
+              execution: :sync,
+              resources: [],
+              queue: nil
             }
 
             {
@@ -307,11 +319,37 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
   end
 
   @doc """
-  Get metadata for a step (initial_tasks, timeout, max_attempts).
+  Get metadata for a step (initial_tasks, timeout, max_attempts, execution, resources, queue).
   """
   @spec get_step_metadata(t(), atom()) :: step_metadata()
   def get_step_metadata(%__MODULE__{step_metadata: metadata}, step_name) do
-    Map.get(metadata, step_name, %{initial_tasks: 1, timeout: nil, max_attempts: 3})
+    Map.get(metadata, step_name, %{
+      initial_tasks: 1, 
+      timeout: nil, 
+      max_attempts: 3,
+      execution: :sync,
+      resources: [],
+      queue: nil
+    })
+  end
+
+  @doc """
+  Get execution configuration for a step.
+  """
+  @spec get_step_execution_config(t(), atom()) :: %{
+    execution: :sync | :oban | :distributed,
+    resources: keyword(),
+    queue: atom() | nil,
+    timeout: integer() | nil
+  }
+  def get_step_execution_config(definition, step_name) do
+    metadata = get_step_metadata(definition, step_name)
+    %{
+      execution: metadata.execution,
+      resources: metadata.resources,
+      queue: metadata.queue,
+      timeout: metadata.timeout
+    }
   end
 
   # Convert module name to valid database slug

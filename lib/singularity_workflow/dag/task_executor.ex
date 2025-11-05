@@ -43,6 +43,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
 
   alias Singularity.Workflow.DAG.WorkflowDefinition
   alias Singularity.Workflow.WorkflowRun
+  alias Singularity.Workflow.Execution.Strategy
 
   @doc """
   Execute all tasks for a workflow run until completion or failure.
@@ -407,32 +408,18 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
       {:error, {:step_not_found, step_slug}}
     end
 
+    # Get execution configuration from step metadata
+    execution_config = WorkflowDefinition.get_step_execution_config(definition, step_slug_atom)
+
     Logger.debug("TaskExecutor: Executing task",
       run_id: run_id,
       step_slug: step_slug,
-      task_index: task_index
+      task_index: task_index,
+      execution_mode: execution_config.execution
     )
 
-    # Execute step function with configurable timeout
-    result =
-      try do
-        task_with_timeout = Task.async(fn -> step_fn.(input) end)
-
-        case Task.yield(task_with_timeout, task_timeout_ms) do
-          {:ok, {:ok, output}} ->
-            {:ok, output}
-
-          {:ok, {:error, reason}} ->
-            {:error, reason}
-
-          nil ->
-            Task.shutdown(task_with_timeout, :brutal_kill)
-            {:error, :timeout}
-        end
-      catch
-        kind, error ->
-          {:error, {:exception, {kind, error}}}
-      end
+    # Execute using execution strategy (handles sync/oban/distributed modes)
+    result = Strategy.execute(step_fn, input, execution_config, task_timeout_ms)
 
     # Handle result
     case result do
