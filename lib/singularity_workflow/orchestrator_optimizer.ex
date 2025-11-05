@@ -256,7 +256,7 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
     # Count total optimizations (workflows with multiple versions)
     total_query =
-      from(w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
+      from(w in SingularityWorkflowSchemas.Workflow,
         where: w.inserted_at >= ^since_date,
         select: count(w.id)
       )
@@ -265,8 +265,8 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
     # Calculate average performance improvement
     improvement_query =
-      from(pm in Singularity.Workflow.Orchestrator.Schemas.PerformanceMetric,
-        join: w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
+      from(pm in SingularityWorkflowSchemas.PerformanceMetric,
+        join: w in SingularityWorkflowSchemas.Workflow,
         on: pm.workflow_id == w.id,
         where: w.inserted_at >= ^since_date,
         select: %{
@@ -279,8 +279,8 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
     # Get most optimized workflows
     most_optimized_query =
-      from(w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
-        left_join: pm in Singularity.Workflow.Orchestrator.Schemas.PerformanceMetric,
+      from(w in SingularityWorkflowSchemas.Workflow,
+        left_join: pm in SingularityWorkflowSchemas.PerformanceMetric,
         on: pm.workflow_id == w.id,
         where: w.inserted_at >= ^since_date,
         group_by: w.name,
@@ -316,7 +316,7 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
     # Get workflow history
     workflow_query =
-      from(w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
+      from(w in SingularityWorkflowSchemas.Workflow,
         where: w.name == ^workflow_name,
         select: w.id
       )
@@ -334,8 +334,8 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
     else
       # Get average execution times per task
       exec_times_query =
-        from(te in Singularity.Workflow.Orchestrator.Schemas.TaskExecution,
-          join: e in Singularity.Workflow.Orchestrator.Schemas.Execution,
+        from(te in SingularityWorkflowSchemas.TaskExecution,
+          join: e in SingularityWorkflowSchemas.Execution,
           on: te.execution_id == e.id,
           where: e.workflow_id in ^workflow_ids and te.status == "completed",
           group_by: te.task_id,
@@ -349,8 +349,8 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
       # Calculate success rates per task
       success_query =
-        from(te in Singularity.Workflow.Orchestrator.Schemas.TaskExecution,
-          join: e in Singularity.Workflow.Orchestrator.Schemas.Execution,
+        from(te in SingularityWorkflowSchemas.TaskExecution,
+          join: e in SingularityWorkflowSchemas.Execution,
           on: te.execution_id == e.id,
           where: e.workflow_id in ^workflow_ids,
           group_by: te.task_id,
@@ -367,8 +367,8 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
       # Get common failure patterns
       failure_query =
-        from(te in Singularity.Workflow.Orchestrator.Schemas.TaskExecution,
-          join: e in Singularity.Workflow.Orchestrator.Schemas.Execution,
+        from(te in SingularityWorkflowSchemas.TaskExecution,
+          join: e in SingularityWorkflowSchemas.Execution,
           on: te.execution_id == e.id,
           where: e.workflow_id in ^workflow_ids and te.status == "failed",
           group_by: [te.task_id, te.error_message],
@@ -385,7 +385,7 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
       # Get resource usage statistics
       resource_query =
-        from(pm in Singularity.Workflow.Orchestrator.Schemas.PerformanceMetric,
+        from(pm in SingularityWorkflowSchemas.PerformanceMetric,
           where: pm.workflow_id in ^workflow_ids,
           select: %{
             avg_memory: avg(pm.memory_usage),
@@ -931,7 +931,7 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
 
     # Find or create workflow record
     workflow =
-      from(w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
+      from(w in SingularityWorkflowSchemas.Workflow,
         where: w.name == ^workflow_name,
         limit: 1
       )
@@ -953,7 +953,7 @@ defmodule Singularity.Workflow.OrchestratorOptimizer do
       }
 
       # Insert pattern metrics directly
-      metric = struct(Singularity.Workflow.Orchestrator.Schemas.PerformanceMetric, metric_attrs)
+      metric = struct(SingularityWorkflowSchemas.PerformanceMetric, metric_attrs)
 
       case repo.insert(metric) do
         {:ok, _metric} ->

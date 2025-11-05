@@ -8,7 +8,7 @@ defmodule Singularity.Workflow.Orchestrator.Repository do
 
   require Logger
   import Ecto.Query
-  alias Singularity.Workflow.Orchestrator.Schemas
+  alias SingularityWorkflowSchemas, as: Schemas
 
   @doc """
   Create a new task graph.
