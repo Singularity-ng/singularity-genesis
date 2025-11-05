@@ -16,16 +16,14 @@ defmodule Singularity.Workflow.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :ecto, :ecto_sql]
+      extra_applications: [:logger]
     ]
   end
 
   defp deps do
     [
-      # Core database dependencies
-      {:ecto, "~> 3.13"},
-      {:ecto_sql, "~> 3.13"},
-      {:postgrex, "~> 0.21"},
+      # Schemas package - contains all Ecto schemas (no circular dependency!)
+      {:singularity_workflow_schemas, path: "../singularity_workflow_schemas"},
 
       # JSON handling
       {:jason, "~> 1.4"},
