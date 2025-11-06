@@ -48,7 +48,7 @@ defmodule Singularity.Workflow.Execution.ObanBackend do
       )
 
       # Insert job into Oban
-      case Oban.insert(job_module.new(job_args), queue: queue) do
+      case Oban.insert(job_module.create(job_args)) do
         {:ok, job} ->
           job_id = Map.get(job, :id)
 
@@ -96,44 +96,109 @@ defmodule Singularity.Workflow.Execution.ObanBackend do
     end
   end
 
-  # Poll for job completion
+  # Poll for job completion using exponential backoff
   defp poll_job_completion(job_id, timeout, poll_interval) do
+    Logger.debug("ObanBackend: Starting job polling",
+      job_id: job_id,
+      timeout: timeout,
+      poll_interval: poll_interval
+    )
+
     start_time = System.monotonic_time(:millisecond)
+    do_poll(job_id, timeout, poll_interval, start_time)
+  end
 
-    Stream.iterate(:continue, fn _ ->
-      elapsed = System.monotonic_time(:millisecond) - start_time
+  defp do_poll(job_id, timeout, poll_interval, start_time) do
+    elapsed = System.monotonic_time(:millisecond) - start_time
 
-      if elapsed > timeout do
-        :timeout
-      else
-        case check_job_status(job_id) do
-          {:completed, result} -> {:completed, result}
-          {:failed, reason} -> {:failed, reason}
-          :running -> :continue
-        end
+    if elapsed > timeout do
+      {:timeout}
+    else
+      case check_job_status(job_id) do
+        {:completed, result} ->
+          {:completed, result}
+
+        {:failed, reason} ->
+          {:failed, reason}
+
+        :running ->
+          # Sleep for poll_interval before checking again
+          Process.sleep(poll_interval)
+          do_poll(job_id, timeout, poll_interval, start_time)
+
+        {:error, reason} ->
+          Logger.error("ObanBackend: Error checking job status",
+            job_id: job_id,
+            reason: inspect(reason)
+          )
+
+          {:failed, reason}
       end
-    end)
-    |> Enum.find(fn
-      {:completed, _} -> true
-      {:failed, _} -> true
-      :timeout -> true
-      :continue -> false
-    end)
-    |> case do
-      {:completed, result} -> {:completed, result}
-      {:failed, reason} -> {:failed, reason}
-      :timeout -> {:timeout}
-      :continue ->
-        # Should not reach here, but fallback
-        {:timeout}
     end
   end
 
-  # Check job status in database
+  # Check job status in Oban database
   defp check_job_status(job_id) do
-    # This would need to be implemented based on how job results are stored
-    # For now, return a placeholder
-    :running
+    Logger.debug("ObanBackend: Checking job status", job_id: job_id)
+
+    if Code.ensure_loaded?(Oban) and Code.ensure_loaded?(Oban.Job) do
+      # Query Oban jobs table for status
+      try do
+        import Ecto.Query
+
+        # Get the Oban repo from application config
+        oban_config = Application.get_env(:singularity, Oban, [])
+        repo = Keyword.get(oban_config, :repo)
+
+        if repo && function_exported?(repo, :one, 1) do
+          query =
+            from j in "oban_jobs",
+              where: j.id == ^job_id,
+              select: %{
+                state: j.state,
+                errors: j.errors,
+                # Oban stores results in meta field or custom field
+                meta: j.meta
+              }
+
+          case repo.one(query) do
+            nil ->
+              {:error, :job_not_found}
+
+            %{state: "completed", meta: meta} ->
+              result = Map.get(meta, "result", %{})
+              {:completed, result}
+
+            %{state: "cancelled", errors: errors} ->
+              {:failed, {:cancelled, errors}}
+
+            %{state: "discarded", errors: errors} ->
+              {:failed, {:discarded, errors}}
+
+            %{state: state} when state in ["available", "scheduled", "executing", "retryable"] ->
+              :running
+
+            %{state: other} ->
+              Logger.warning("ObanBackend: Unknown Oban job state", state: other)
+              :running
+          end
+        else
+          Logger.error("ObanBackend: Oban repo not configured or unavailable")
+          {:error, :oban_repo_unavailable}
+        end
+      rescue
+        e ->
+          Logger.error("ObanBackend: Exception checking job status",
+            job_id: job_id,
+            error: inspect(e)
+          )
+
+          {:error, {:exception, Exception.message(e)}}
+      end
+    else
+      Logger.error("ObanBackend: Oban not loaded, cannot check job status")
+      {:error, :oban_not_loaded}
+    end
   end
 
   # Encode function for storage (simplified - in practice would need proper serialization)

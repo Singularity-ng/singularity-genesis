@@ -37,6 +37,9 @@ defmodule Singularity.Workflow.MixProject do
       # pgmq client
       {:pgmq, "~> 0.4"},
 
+      # Job queue for background processing
+      {:oban, "~> 2.17"},
+
       # Code quality and security (dev only)
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},

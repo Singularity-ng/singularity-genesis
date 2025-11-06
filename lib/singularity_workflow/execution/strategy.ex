@@ -20,7 +20,7 @@ defmodule Singularity.Workflow.Execution.Strategy do
   """
 
   require Logger
-  alias Singularity.Workflow.Execution.{DirectBackend, ObanBackend}
+  alias Singularity.Workflow.Execution.{DirectBackend, DistributedBackend, ObanBackend}
 
   @type execution_config :: %{
     execution: :sync | :oban | :distributed,
