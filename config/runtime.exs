@@ -12,12 +12,20 @@ if config_env() == :prod do
       For example: ecto://USER:PASS@HOST/DATABASE
       """
 
+  db_ssl =
+    case System.get_env("DB_SSL") do
+      "true" -> true
+      "false" -> false
+      nil -> true
+      _ -> true
+    end
+
   config :singularity_workflow, Singularity.Workflow.Repo,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     queue_target: 5000,
     queue_interval: 1000,
-    ssl: String.to_existing_atom(System.get_env("DB_SSL") || "true")
+    ssl: db_ssl
 
   # PGMQ configuration
   config :singularity_workflow, :pgmq,

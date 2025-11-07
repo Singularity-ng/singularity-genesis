@@ -111,19 +111,17 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
       coordination: "pgmq"
     )
 
-    execute_loop(
-      run_id,
-      definition.slug,
-      definition,
-      repo,
-      worker_id,
-      start_time,
-      timeout,
-      poll_interval_ms,
-      batch_size,
-      max_poll_seconds,
-      task_timeout_ms
-    )
+    config = %{
+      worker_id: worker_id,
+      poll_interval_ms: poll_interval_ms,
+      batch_size: batch_size,
+      max_poll_seconds: max_poll_seconds,
+      task_timeout_ms: task_timeout_ms,
+      timeout: timeout,
+      start_time: start_time
+    }
+
+    execute_loop(run_id, definition.slug, definition, repo, config)
   end
 
   # Main execution loop: poll pgmq → claim → execute → repeat
@@ -132,27 +130,19 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
           String.t(),
           WorkflowDefinition.t(),
           module(),
-          String.t(),
-          integer(),
-          integer() | :infinity,
-          integer(),
-          integer(),
-          integer(),
-          integer()
+          map()
         ) :: {:ok, map()} | {:ok, :in_progress} | {:error, term()}
-  defp execute_loop(
-         run_id,
-         workflow_slug,
-         definition,
-         repo,
-         worker_id,
-         start_time,
-         timeout,
-         poll_interval_ms,
-         batch_size,
-         max_poll_seconds,
-         task_timeout_ms
-       ) do
+  defp execute_loop(run_id, workflow_slug, definition, repo, config) do
+    %{
+      worker_id: worker_id,
+      poll_interval_ms: poll_interval_ms,
+      batch_size: batch_size,
+      max_poll_seconds: max_poll_seconds,
+      task_timeout_ms: task_timeout_ms,
+      timeout: timeout,
+      start_time: start_time
+    } = config
+
     elapsed = System.monotonic_time(:millisecond) - start_time
 
     if timeout != :infinity and elapsed > timeout do
@@ -181,19 +171,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
             task_count: count
           )
 
-          execute_loop(
-            run_id,
-            workflow_slug,
-            definition,
-            repo,
-            worker_id,
-            start_time,
-            timeout,
-            poll_interval_ms,
-            batch_size,
-            max_poll_seconds,
-            task_timeout_ms
-          )
+          execute_loop(run_id, workflow_slug, definition, repo, config)
 
         {:ok, :no_messages} ->
           # No messages available, check run status
@@ -207,19 +185,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
 
             {:ok, :in_progress} ->
               # Run still in progress, continue polling
-              execute_loop(
-                run_id,
-                workflow_slug,
-                definition,
-                repo,
-                worker_id,
-                start_time,
-                timeout,
-                poll_interval_ms,
-                batch_size,
-                max_poll_seconds,
-                task_timeout_ms
-              )
+              execute_loop(run_id, workflow_slug, definition, repo, config)
           end
 
         {:error, reason} ->
