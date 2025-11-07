@@ -284,42 +284,14 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
             )
 
             # Phase 3: Execute tasks concurrently
-            results =
-              Task.async_stream(
-                tasks,
-                fn task -> execute_task_from_map(task, definition, repo, task_timeout_ms) end,
-                max_concurrency: batch_size,
-                timeout: 60_000
-              )
-              |> Enum.to_list()
-
-            # Check for execution or worker failures (not task function failures, which are handled)
-            failed =
-              Enum.filter(results, fn
-                # Task execution or DB call failed
-                {:ok, {:error, _}} -> true
-                # Worker process exited
-                {:exit, _} -> true
-                _ -> false
-              end)
-
-            if failed != [] do
-              Logger.warning(
-                "TaskExecutor: #{length(failed)}/#{length(tasks)} task executions failed in batch",
-                workflow_slug: workflow_slug,
-                failed_count: length(failed)
-              )
-
-              # Return error only if significant portion of batch failed (>50%)
-              # This allows for occasional worker failures without cascading retry loops
-              if length(failed) * 2 > length(tasks) do
-                {:error, {:batch_failure, length(failed), length(tasks)}}
-              else
-                {:ok, :tasks_executed, length(tasks)}
-              end
-            else
-              {:ok, :tasks_executed, length(tasks)}
-            end
+            execute_tasks_concurrently(
+              tasks,
+              definition,
+              repo,
+              task_timeout_ms,
+              batch_size,
+              workflow_slug
+            )
 
           {:error, reason} ->
             Logger.error("TaskExecutor: Failed to start tasks",
@@ -337,6 +309,54 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
         )
 
         {:error, reason}
+    end
+  end
+
+  # Execute tasks concurrently and check for failures
+  defp execute_tasks_concurrently(
+         tasks,
+         definition,
+         repo,
+         task_timeout_ms,
+         batch_size,
+         workflow_slug
+       ) do
+    results =
+      Task.async_stream(
+        tasks,
+        fn task -> execute_task_from_map(task, definition, repo, task_timeout_ms) end,
+        max_concurrency: batch_size,
+        timeout: 60_000
+      )
+      |> Enum.to_list()
+
+    check_batch_failures(results, tasks, workflow_slug)
+  end
+
+  # Check for execution or worker failures in batch
+  defp check_batch_failures(results, tasks, workflow_slug) do
+    failed =
+      Enum.filter(results, fn
+        {:ok, {:error, _}} -> true
+        {:exit, _} -> true
+        _ -> false
+      end)
+
+    if failed == [] do
+      {:ok, :tasks_executed, length(tasks)}
+    else
+      Logger.warning(
+        "TaskExecutor: #{length(failed)}/#{length(tasks)} task executions failed in batch",
+        workflow_slug: workflow_slug,
+        failed_count: length(failed)
+      )
+
+      # Return error only if significant portion of batch failed (>50%)
+      if length(failed) * 2 > length(tasks) do
+        {:error, {:batch_failure, length(failed), length(tasks)}}
+      else
+        {:ok, :tasks_executed, length(tasks)}
+      end
     end
   end
 
