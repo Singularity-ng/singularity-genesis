@@ -145,11 +145,11 @@ defmodule Singularity.Workflow.Jobs.GpuStepJob do
   defp check_gpu_available(_resources) do
     # Check if CUDA is available via Nx backend
     case Code.ensure_loaded(Nx) do
-      {:module, _Nx} ->
+      {:module, _nx_module} ->
         try do
           # Check if EXLA backend is available (CUDA support)
           case Code.ensure_loaded(EXLA) do
-            {:module, _EXLA} ->
+            {:module, _exla_module} ->
               # Check if CUDA_VISIBLE_DEVICES is set, indicating GPU availability
               if System.get_env("CUDA_VISIBLE_DEVICES") do
                 device_id = System.get_env("CUDA_VISIBLE_DEVICES") |> parse_device_id()

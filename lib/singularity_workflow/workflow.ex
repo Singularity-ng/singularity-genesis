@@ -140,26 +140,28 @@ defmodule Singularity.Workflow.Workflow do
   def status(run_id, opts \\ []) do
     repo = resolve_repo(opts)
 
-    with %WorkflowRun{} = run <- repo.get(WorkflowRun, run_id) do
-      steps =
-        StepState
-        |> where(run_id: ^run_id)
-        |> repo.all()
-        |> Enum.map(&format_step/1)
+    case repo.get(WorkflowRun, run_id) do
+      %WorkflowRun{} = run ->
+        steps =
+          StepState
+          |> where(run_id: ^run_id)
+          |> repo.all()
+          |> Enum.map(&format_step/1)
 
-      {:ok,
-       %{
-         id: run_id,
-         workflow: run.workflow_slug,
-         state: status_atom(run.status),
-         started_at: run.started_at,
-         completed_at: run.completed_at,
-         failed_at: run.failed_at,
-         error: run.error_message,
-         steps: steps
-       }}
-    else
-      nil -> {:error, :not_found}
+        {:ok,
+         %{
+           id: run_id,
+           workflow: run.workflow_slug,
+           state: status_atom(run.status),
+           started_at: run.started_at,
+           completed_at: run.completed_at,
+           failed_at: run.failed_at,
+           error: run.error_message,
+           steps: steps
+         }}
+
+      nil ->
+        {:error, :not_found}
     end
   end
 
@@ -176,41 +178,43 @@ defmodule Singularity.Workflow.Workflow do
   def metrics(run_id, opts \\ []) do
     repo = resolve_repo(opts)
 
-    with %WorkflowRun{} = run <- repo.get(WorkflowRun, run_id) do
-      steps =
-        StepState
-        |> where(run_id: ^run_id)
-        |> repo.all()
+    case repo.get(WorkflowRun, run_id) do
+      %WorkflowRun{} = run ->
+        steps =
+          StepState
+          |> where(run_id: ^run_id)
+          |> repo.all()
 
-      completed = Enum.count(steps, &(&1.status == "completed"))
-      failed = Enum.count(steps, &(&1.status == "failed"))
-      total = max(Enum.count(steps), 1)
+        completed = Enum.count(steps, &(&1.status == "completed"))
+        failed = Enum.count(steps, &(&1.status == "failed"))
+        total = max(Enum.count(steps), 1)
 
-      duration_ms =
-        case {run.started_at, run.completed_at} do
-          {%DateTime{} = start, %DateTime{} = finish} ->
-            DateTime.diff(finish, start, :millisecond)
+        duration_ms =
+          case {run.started_at, run.completed_at} do
+            {%DateTime{} = start, %DateTime{} = finish} ->
+              DateTime.diff(finish, start, :millisecond)
 
-          _ ->
-            nil
-        end
+            _ ->
+              nil
+          end
 
-      throughput =
-        if duration_ms == nil or duration_ms == 0 do
-          completed
-        else
-          completed * 1000 / duration_ms
-        end
+        throughput =
+          if duration_ms == nil or duration_ms == 0 do
+            completed
+          else
+            completed * 1000 / duration_ms
+          end
 
-      {:ok,
-       %{
-         execution_time_ms: duration_ms,
-         success_rate: completed / total,
-         error_rate: failed / total,
-         throughput: throughput
-       }}
-    else
-      nil -> {:error, :not_found}
+        {:ok,
+         %{
+           execution_time_ms: duration_ms,
+           success_rate: completed / total,
+           error_rate: failed / total,
+           throughput: throughput
+         }}
+
+      nil ->
+        {:error, :not_found}
     end
   end
 
