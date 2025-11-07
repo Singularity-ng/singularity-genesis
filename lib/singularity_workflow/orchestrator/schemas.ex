@@ -1,75 +1,164 @@
 defmodule Singularity.Workflow.Orchestrator.Schemas do
   @moduledoc """
-  Backward compatibility aliases for workflow schemas.
+  Ecto schemas for HTDAG orchestrator functionality.
 
-  **DEPRECATED**: Use `SingularityWorkflowSchemas` directly instead.
-
-  This module provides aliases to the new `SingularityWorkflowSchemas` package
-  for backward compatibility. All new code should reference the schemas directly
-  from the `SingularityWorkflowSchemas` module.
-
-  ## Migration Guide
-
-  Replace:
-  ```elixir
-  alias Singularity.Workflow.Orchestrator.Schemas.Workflow
-  ```
-
-  With:
-  ```elixir
-  alias SingularityWorkflowSchemas.Workflow
-  ```
+  These schemas support goal-driven workflow decomposition and execution tracking.
   """
 
-  @doc false
-  defmacro __using__(_opts) do
-    quote do
-      alias SingularityWorkflowSchemas.TaskGraph
-      alias SingularityWorkflowSchemas.Workflow
-      alias SingularityWorkflowSchemas.Execution
-      alias SingularityWorkflowSchemas.TaskExecution
-      alias SingularityWorkflowSchemas.Event
-      alias SingularityWorkflowSchemas.PerformanceMetric
-      alias SingularityWorkflowSchemas.LearningPattern
+  defmodule TaskGraph do
+    @moduledoc """
+    Schema for hierarchical task graphs in HTDAG orchestration.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    schema "orchestrator_task_graphs" do
+      field(:goal, :string)
+      field(:tasks, :map)
+      field(:metadata, :map, default: %{})
+      field(:status, :string, default: "pending")
+      timestamps()
+    end
+
+    def changeset(task_graph, attrs) do
+      task_graph
+      |> cast(attrs, [:goal, :tasks, :metadata, :status])
+      |> validate_required([:goal])
     end
   end
 
-  # Re-export nested modules for backward compatibility
-  defmodule TaskGraph do
-    @moduledoc false
-    defdelegate changeset(task_graph, attrs), to: SingularityWorkflowSchemas.TaskGraph
-  end
-
   defmodule Workflow do
-    @moduledoc false
-    defdelegate workflow_changeset(workflow, attrs), to: SingularityWorkflowSchemas.Workflow
+    @moduledoc """
+    Schema for workflow metadata.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    schema "orchestrator_workflows" do
+      field(:name, :string)
+      field(:description, :string)
+      field(:config, :map, default: %{})
+      timestamps()
+    end
+
+    def workflow_changeset(workflow, attrs) do
+      workflow
+      |> cast(attrs, [:name, :description, :config])
+      |> validate_required([:name])
+    end
   end
 
   defmodule Execution do
-    @moduledoc false
-    defdelegate execution_changeset(execution, attrs), to: SingularityWorkflowSchemas.Execution
+    @moduledoc """
+    Schema for workflow executions.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    schema "orchestrator_executions" do
+      field(:workflow_id, :binary_id)
+      field(:status, :string)
+      field(:result, :map)
+      field(:started_at, :utc_datetime)
+      field(:completed_at, :utc_datetime)
+      timestamps()
+    end
+
+    def execution_changeset(execution, attrs) do
+      execution
+      |> cast(attrs, [:workflow_id, :status, :result, :started_at, :completed_at])
+      |> validate_required([:workflow_id, :status])
+    end
   end
 
   defmodule TaskExecution do
-    @moduledoc false
-    defdelegate task_execution_changeset(task_execution, attrs),
-      to: SingularityWorkflowSchemas.TaskExecution
+    @moduledoc """
+    Schema for task executions.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    schema "orchestrator_task_executions" do
+      field(:execution_id, :binary_id)
+      field(:task_id, :string)
+      field(:status, :string)
+      field(:result, :map)
+      timestamps()
+    end
+
+    def task_execution_changeset(task_execution, attrs) do
+      task_execution
+      |> cast(attrs, [:execution_id, :task_id, :status, :result])
+      |> validate_required([:execution_id, :task_id, :status])
+    end
   end
 
   defmodule Event do
-    @moduledoc false
-    defdelegate event_changeset(event, attrs), to: SingularityWorkflowSchemas.Event
+    @moduledoc """
+    Schema for orchestrator events.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    schema "orchestrator_events" do
+      field(:type, :string)
+      field(:data, :map)
+      timestamps()
+    end
+
+    def event_changeset(event, attrs) do
+      event
+      |> cast(attrs, [:type, :data])
+      |> validate_required([:type])
+    end
   end
 
   defmodule PerformanceMetric do
-    @moduledoc false
-    defdelegate performance_metric_changeset(metric, attrs),
-      to: SingularityWorkflowSchemas.PerformanceMetric
+    @moduledoc """
+    Schema for performance metrics.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    schema "orchestrator_performance_metrics" do
+      field(:execution_id, :binary_id)
+      field(:metric_name, :string)
+      field(:value, :float)
+      timestamps()
+    end
+
+    def performance_metric_changeset(metric, attrs) do
+      metric
+      |> cast(attrs, [:execution_id, :metric_name, :value])
+      |> validate_required([:execution_id, :metric_name, :value])
+    end
   end
 
   defmodule LearningPattern do
-    @moduledoc false
-    defdelegate learning_pattern_changeset(pattern, attrs),
-      to: SingularityWorkflowSchemas.LearningPattern
+    @moduledoc """
+    Schema for learned optimization patterns.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    schema "orchestrator_learning_patterns" do
+      field(:pattern_type, :string)
+      field(:pattern_data, :map)
+      field(:confidence, :float)
+      timestamps()
+    end
+
+    def learning_pattern_changeset(pattern, attrs) do
+      pattern
+      |> cast(attrs, [:pattern_type, :pattern_data, :confidence])
+      |> validate_required([:pattern_type, :pattern_data])
+    end
   end
 end

@@ -42,8 +42,8 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
   require Logger
 
   alias Singularity.Workflow.DAG.WorkflowDefinition
-  alias Singularity.Workflow.WorkflowRun
   alias Singularity.Workflow.Execution.Strategy
+  alias Singularity.Workflow.WorkflowRun
 
   @doc """
   Execute all tasks for a workflow run until completion or failure.
@@ -111,19 +111,17 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
       coordination: "pgmq"
     )
 
-    execute_loop(
-      run_id,
-      definition.slug,
-      definition,
-      repo,
-      worker_id,
-      start_time,
-      timeout,
-      poll_interval_ms,
-      batch_size,
-      max_poll_seconds,
-      task_timeout_ms
-    )
+    config = %{
+      worker_id: worker_id,
+      poll_interval_ms: poll_interval_ms,
+      batch_size: batch_size,
+      max_poll_seconds: max_poll_seconds,
+      task_timeout_ms: task_timeout_ms,
+      timeout: timeout,
+      start_time: start_time
+    }
+
+    execute_loop(run_id, definition.slug, definition, repo, config)
   end
 
   # Main execution loop: poll pgmq → claim → execute → repeat
@@ -132,106 +130,72 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
           String.t(),
           WorkflowDefinition.t(),
           module(),
-          String.t(),
-          integer(),
-          integer() | :infinity,
-          integer(),
-          integer(),
-          integer(),
-          integer()
+          map()
         ) :: {:ok, map()} | {:ok, :in_progress} | {:error, term()}
-  defp execute_loop(
-         run_id,
-         workflow_slug,
-         definition,
-         repo,
-         worker_id,
-         start_time,
-         timeout,
-         poll_interval_ms,
-         batch_size,
-         max_poll_seconds,
-         task_timeout_ms
-       ) do
+  defp execute_loop(run_id, workflow_slug, definition, repo, config) do
+    %{
+      worker_id: worker_id,
+      poll_interval_ms: poll_interval_ms,
+      batch_size: batch_size,
+      max_poll_seconds: max_poll_seconds,
+      task_timeout_ms: task_timeout_ms,
+      timeout: timeout,
+      start_time: start_time
+    } = config
+
     elapsed = System.monotonic_time(:millisecond) - start_time
 
-    cond do
-      timeout != :infinity and elapsed > timeout ->
-        Logger.warning("Timeout exceeded",
-          run_id: run_id,
-          elapsed_ms: elapsed,
-          timeout_ms: timeout
-        )
+    if timeout != :infinity and elapsed > timeout do
+      Logger.warning("Timeout exceeded",
+        run_id: run_id,
+        elapsed_ms: elapsed,
+        timeout_ms: timeout
+      )
 
-        check_run_status(run_id, repo)
+      check_run_status(run_id, repo)
+    else
+      case poll_and_execute_batch(
+             workflow_slug,
+             definition,
+             repo,
+             worker_id,
+             batch_size,
+             max_poll_seconds,
+             poll_interval_ms,
+             task_timeout_ms
+           ) do
+        {:ok, :tasks_executed, count} ->
+          # Tasks completed, poll for next batch immediately
+          Logger.debug("Executed batch of tasks",
+            run_id: run_id,
+            task_count: count
+          )
 
-      true ->
-        case poll_and_execute_batch(
-               workflow_slug,
-               definition,
-               repo,
-               worker_id,
-               batch_size,
-               max_poll_seconds,
-               poll_interval_ms,
-               task_timeout_ms
-             ) do
-          {:ok, :tasks_executed, count} ->
-            # Tasks completed, poll for next batch immediately
-            Logger.debug("Executed batch of tasks",
-              run_id: run_id,
-              task_count: count
-            )
+          execute_loop(run_id, workflow_slug, definition, repo, config)
 
-            execute_loop(
-              run_id,
-              workflow_slug,
-              definition,
-              repo,
-              worker_id,
-              start_time,
-              timeout,
-              poll_interval_ms,
-              batch_size,
-              max_poll_seconds,
-              task_timeout_ms
-            )
+        {:ok, :no_messages} ->
+          # No messages available, check run status
+          case check_run_status(run_id, repo) do
+            {:ok, output} when is_map(output) ->
+              # Run completed successfully
+              {:ok, output}
 
-          {:ok, :no_messages} ->
-            # No messages available, check run status
-            case check_run_status(run_id, repo) do
-              {:ok, output} when is_map(output) ->
-                # Run completed successfully
-                {:ok, output}
+            {:error, _} = error ->
+              error
 
-              {:error, _} = error ->
-                error
+            {:ok, :in_progress} ->
+              # Run still in progress, continue polling
+              execute_loop(run_id, workflow_slug, definition, repo, config)
+          end
 
-              {:ok, :in_progress} ->
-                # Run still in progress, continue polling
-                execute_loop(
-                  run_id,
-                  workflow_slug,
-                  definition,
-                  repo,
-                  worker_id,
-                  start_time,
-                  timeout,
-                  poll_interval_ms,
-                  batch_size,
-                  max_poll_seconds,
-                  task_timeout_ms
-                )
-            end
+        {:error, reason} ->
+          Logger.error("Task execution failed",
+            run_id: run_id,
+            reason: inspect(reason)
+          )
 
-          {:error, reason} ->
-            Logger.error("Task execution failed",
-              run_id: run_id,
-              reason: inspect(reason)
-            )
-
-            {:error, reason}
-        end
+          {:error, reason}
+      end
     end
   end
 
@@ -320,42 +284,14 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
             )
 
             # Phase 3: Execute tasks concurrently
-            results =
-              Task.async_stream(
-                tasks,
-                fn task -> execute_task_from_map(task, definition, repo, task_timeout_ms) end,
-                max_concurrency: batch_size,
-                timeout: 60_000
-              )
-              |> Enum.to_list()
-
-            # Check for execution or worker failures (not task function failures, which are handled)
-            failed =
-              Enum.filter(results, fn
-                # Task execution or DB call failed
-                {:ok, {:error, _}} -> true
-                # Worker process exited
-                {:exit, _} -> true
-                _ -> false
-              end)
-
-            if failed != [] do
-              Logger.warning(
-                "TaskExecutor: #{length(failed)}/#{length(tasks)} task executions failed in batch",
-                workflow_slug: workflow_slug,
-                failed_count: length(failed)
-              )
-
-              # Return error only if significant portion of batch failed (>50%)
-              # This allows for occasional worker failures without cascading retry loops
-              if length(failed) * 2 > length(tasks) do
-                {:error, {:batch_failure, length(failed), length(tasks)}}
-              else
-                {:ok, :tasks_executed, length(tasks)}
-              end
-            else
-              {:ok, :tasks_executed, length(tasks)}
-            end
+            execute_tasks_concurrently(
+              tasks,
+              definition,
+              repo,
+              task_timeout_ms,
+              batch_size,
+              workflow_slug
+            )
 
           {:error, reason} ->
             Logger.error("TaskExecutor: Failed to start tasks",
@@ -373,6 +309,54 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
         )
 
         {:error, reason}
+    end
+  end
+
+  # Execute tasks concurrently and check for failures
+  defp execute_tasks_concurrently(
+         tasks,
+         definition,
+         repo,
+         task_timeout_ms,
+         batch_size,
+         workflow_slug
+       ) do
+    results =
+      Task.async_stream(
+        tasks,
+        fn task -> execute_task_from_map(task, definition, repo, task_timeout_ms) end,
+        max_concurrency: batch_size,
+        timeout: 60_000
+      )
+      |> Enum.to_list()
+
+    check_batch_failures(results, tasks, workflow_slug)
+  end
+
+  # Check for execution or worker failures in batch
+  defp check_batch_failures(results, tasks, workflow_slug) do
+    failed =
+      Enum.filter(results, fn
+        {:ok, {:error, _}} -> true
+        {:exit, _} -> true
+        _ -> false
+      end)
+
+    if failed == [] do
+      {:ok, :tasks_executed, length(tasks)}
+    else
+      Logger.warning(
+        "TaskExecutor: #{length(failed)}/#{length(tasks)} task executions failed in batch",
+        workflow_slug: workflow_slug,
+        failed_count: length(failed)
+      )
+
+      # Return error only if significant portion of batch failed (>50%)
+      if length(failed) * 2 > length(tasks) do
+        {:error, {:batch_failure, length(failed), length(tasks)}}
+      else
+        {:ok, :tasks_executed, length(tasks)}
+      end
     end
   end
 

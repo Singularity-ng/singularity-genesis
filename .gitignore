@@ -54,5 +54,12 @@ singularity_workflow-*.tar
 .direnv/
 .direnv/.direnv-version
 
+# Rust build artifacts (should not be present in Elixir project)
+.cargo-build/
+Cargo.lock
+Cargo.toml
+*.rs
+target/
+
 # NOTE: test/snapshots/ is NOT ignored - snapshots are committed to git
 # This allows regression detection when output structure changes

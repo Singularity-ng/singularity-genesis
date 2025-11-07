@@ -18,10 +18,7 @@ defmodule Singularity.Workflow.Execution.ObanBackend do
   """
   @spec execute(function(), any(), map(), map()) :: {:ok, any()} | {:error, term()}
   def execute(step_fn, input, config, context) do
-    unless Code.ensure_loaded?(Oban) do
-      Logger.error("ObanBackend: Oban not available")
-      {:error, :oban_not_available}
-    else
+    if Code.ensure_loaded?(Oban) do
       # Extract configuration
       queue = config[:queue] || :default
       timeout = config[:timeout] || 300_000
@@ -64,6 +61,9 @@ defmodule Singularity.Workflow.Execution.ObanBackend do
           Logger.error("ObanBackend: Failed to queue job", reason: inspect(reason))
           {:error, {:oban_insert_failed, reason}}
       end
+    else
+      Logger.error("ObanBackend: Oban not available")
+      {:error, :oban_not_available}
     end
   end
 
@@ -152,7 +152,7 @@ defmodule Singularity.Workflow.Execution.ObanBackend do
 
         if repo && function_exported?(repo, :one, 1) do
           query =
-            from j in "oban_jobs",
+            from(j in "oban_jobs",
               where: j.id == ^job_id,
               select: %{
                 state: j.state,
@@ -160,6 +160,7 @@ defmodule Singularity.Workflow.Execution.ObanBackend do
                 # Oban stores results in meta field or custom field
                 meta: j.meta
               }
+            )
 
           case repo.one(query) do
             nil ->

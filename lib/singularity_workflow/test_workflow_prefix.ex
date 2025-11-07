@@ -34,8 +34,8 @@ defmodule Singularity.Workflow.TestWorkflowPrefix do
 
   Returns a UUID-based prefix that can be used for all test workflows in this run.
   """
-  @spec start() :: String.t()
-  def start() do
+  @spec start :: String.t()
+  def start do
     short_uuid = Ecto.UUID.generate() |> String.slice(0..7)
     "singularity_workflow_test_#{short_uuid}_"
   end
@@ -49,39 +49,42 @@ defmodule Singularity.Workflow.TestWorkflowPrefix do
   @spec cleanup_by_prefix(String.t(), module()) :: {:ok, integer()} | {:error, term()}
   def cleanup_by_prefix(prefix, repo) do
     # Get all workflow slugs starting with the prefix
-    with {:ok, %{rows: workflow_rows}} <-
-           repo.query(
-             "SELECT workflow_slug FROM workflows WHERE workflow_slug LIKE $1::text",
-             ["#{prefix}%"]
-           ) do
-      # Extract workflow slugs
-      workflow_slugs = Enum.map(workflow_rows, fn [slug] -> slug end)
+    case repo.query(
+           "SELECT workflow_slug FROM workflows WHERE workflow_slug LIKE $1::text",
+           ["#{prefix}%"]
+         ) do
+      {:ok, %{rows: workflow_rows}} ->
+        # Extract workflow slugs
+        workflow_slugs = Enum.map(workflow_rows, fn [slug] -> slug end)
 
-      # Delete dependencies for all matching workflows
-      with {:ok, _} <-
-             repo.query(
-               "DELETE FROM workflow_step_dependencies_def WHERE workflow_slug = ANY($1::text[])",
-               [workflow_slugs]
-             ),
-           {:ok, _} <-
-             repo.query(
-               "DELETE FROM workflow_steps WHERE workflow_slug = ANY($1::text[])",
-               [workflow_slugs]
-             ),
-           {:ok, result} <-
-             repo.query(
-               "DELETE FROM workflows WHERE workflow_slug = ANY($1::text[])",
-               [workflow_slugs]
-             ) do
-        deleted_count = result.num_rows
-        Logger.info("Cleaned up #{deleted_count} test workflows with prefix: #{prefix}")
-        {:ok, deleted_count}
-      else
-        {:error, reason} ->
-          Logger.error("Failed to cleanup test workflows with prefix #{prefix}: #{inspect(reason)}")
-          {:error, reason}
-      end
-    else
+        # Delete dependencies for all matching workflows
+        with {:ok, _} <-
+               repo.query(
+                 "DELETE FROM workflow_step_dependencies_def WHERE workflow_slug = ANY($1::text[])",
+                 [workflow_slugs]
+               ),
+             {:ok, _} <-
+               repo.query(
+                 "DELETE FROM workflow_steps WHERE workflow_slug = ANY($1::text[])",
+                 [workflow_slugs]
+               ),
+             {:ok, result} <-
+               repo.query(
+                 "DELETE FROM workflows WHERE workflow_slug = ANY($1::text[])",
+                 [workflow_slugs]
+               ) do
+          deleted_count = result.num_rows
+          Logger.info("Cleaned up #{deleted_count} test workflows with prefix: #{prefix}")
+          {:ok, deleted_count}
+        else
+          {:error, reason} ->
+            Logger.error(
+              "Failed to cleanup test workflows with prefix #{prefix}: #{inspect(reason)}"
+            )
+
+            {:error, reason}
+        end
+
       {:error, reason} ->
         Logger.error("Failed to query test workflows with prefix #{prefix}: #{inspect(reason)}")
         {:error, reason}

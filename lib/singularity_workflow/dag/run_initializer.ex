@@ -33,7 +33,9 @@ defmodule Singularity.Workflow.DAG.RunInitializer do
   import Ecto.Query
 
   alias Singularity.Workflow.DAG.WorkflowDefinition
-  alias Singularity.Workflow.{WorkflowRun, StepState, StepDependency}
+  alias Singularity.Workflow.StepDependency
+  alias Singularity.Workflow.StepState
+  alias Singularity.Workflow.WorkflowRun
 
   @doc """
   Initialize a workflow run with all database records.

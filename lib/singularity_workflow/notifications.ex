@@ -338,9 +338,10 @@ defmodule Singularity.Workflow.Notifications do
 
                   %{
                     id: Ecto.UUID.generate(),
-                    workflow_id: Map.get(decoded_payload, "workflow_id") ||
-                                 Map.get(decoded_payload, :workflow_id) ||
-                                 Ecto.UUID.generate(),
+                    workflow_id:
+                      Map.get(decoded_payload, "workflow_id") ||
+                        Map.get(decoded_payload, :workflow_id) ||
+                        Ecto.UUID.generate(),
                     queue_name: queue_name,
                     message_id: Integer.to_string(msg_id),
                     payload: decoded_payload

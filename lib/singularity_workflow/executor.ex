@@ -98,7 +98,9 @@ defmodule Singularity.Workflow.Executor do
 
   require Logger
 
-  alias Singularity.Workflow.DAG.{WorkflowDefinition, RunInitializer, TaskExecutor}
+  alias Singularity.Workflow.DAG.RunInitializer
+  alias Singularity.Workflow.DAG.TaskExecutor
+  alias Singularity.Workflow.DAG.WorkflowDefinition
 
   @doc """
   Execute a workflow with database-driven DAG coordination.

@@ -435,7 +435,7 @@ defmodule Singularity.Workflow.Orchestrator.Executor do
     import Ecto.Query
 
     query =
-      from(te in SingularityWorkflowSchemas.TaskExecution,
+      from(te in Singularity.Workflow.Orchestrator.Schemas.TaskExecution,
         where: te.execution_id == ^execution_id,
         order_by: [asc: te.inserted_at],
         select: te
@@ -473,7 +473,7 @@ defmodule Singularity.Workflow.Orchestrator.Executor do
 
     # Update all running tasks to cancelled status
     query =
-      from(te in SingularityWorkflowSchemas.TaskExecution,
+      from(te in Singularity.Workflow.Orchestrator.Schemas.TaskExecution,
         where: te.execution_id == ^execution_id and te.status == "running",
         select: te
       )
@@ -485,7 +485,7 @@ defmodule Singularity.Workflow.Orchestrator.Executor do
       # Cancel each running task
       Enum.each(running_tasks, fn task ->
         changeset =
-          SingularityWorkflowSchemas.TaskExecution.task_execution_changeset(
+          Singularity.Workflow.Orchestrator.Schemas.TaskExecution.task_execution_changeset(
             task,
             %{
               status: "cancelled",

@@ -37,7 +37,8 @@ defmodule Singularity.Workflow.Jobs.GpuStepJob do
 
   alias Singularity.Workflow.Execution.DirectBackend
 
-  @default_gpu_timeout 600_000  # 10 minutes for GPU operations
+  # 10 minutes for GPU operations
+  @default_gpu_timeout 600_000
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
@@ -144,11 +145,11 @@ defmodule Singularity.Workflow.Jobs.GpuStepJob do
   defp check_gpu_available(_resources) do
     # Check if CUDA is available via Nx backend
     case Code.ensure_loaded(Nx) do
-      {:module, _Nx} ->
+      {:module, _nx_module} ->
         try do
           # Check if EXLA backend is available (CUDA support)
           case Code.ensure_loaded(EXLA) do
-            {:module, _EXLA} ->
+            {:module, _exla_module} ->
               # Check if CUDA_VISIBLE_DEVICES is set, indicating GPU availability
               if System.get_env("CUDA_VISIBLE_DEVICES") do
                 device_id = System.get_env("CUDA_VISIBLE_DEVICES") |> parse_device_id()
@@ -156,9 +157,10 @@ defmodule Singularity.Workflow.Jobs.GpuStepJob do
               else
                 # Try to check Nx backend if available
                 try do
-                  if Code.ensure_loaded(Nx) == {:module, Nx} and 
-                     function_exported?(Nx, :default_backend, 0) do
+                  if Code.ensure_loaded(Nx) == {:module, Nx} and
+                       function_exported?(Nx, :default_backend, 0) do
                     backend = Nx.default_backend()
+
                     if backend == EXLA do
                       {:ok, %{device_id: 0, backend: :cuda, memory_gb: 12}}
                     else
@@ -172,6 +174,7 @@ defmodule Singularity.Workflow.Jobs.GpuStepJob do
                     {:error, :gpu_check_failed}
                 end
               end
+
             _ ->
               {:error, :gpu_backend_not_available}
           end
@@ -179,20 +182,22 @@ defmodule Singularity.Workflow.Jobs.GpuStepJob do
           _ ->
             {:error, :gpu_check_failed}
         end
-      
+
       {:error, _} ->
         # Nx not available, assume GPU unavailable
         {:error, :nx_not_available}
     end
   end
-  
+
   defp parse_device_id(nil), do: nil
+
   defp parse_device_id(str) when is_binary(str) do
     case Integer.parse(str) do
       {device_id, _} -> device_id
       :error -> nil
     end
   end
+
   defp parse_device_id(_), do: nil
 
   # Execute function with GPU context (set environment variables, etc.).

@@ -317,7 +317,7 @@ defmodule Singularity.Workflow.WorkflowComposer do
 
     # Count total workflows
     total_query =
-      from(w in SingularityWorkflowSchemas.Workflow,
+      from(w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
         where: w.inserted_at >= ^since_date,
         select: count(w.id)
       )
@@ -326,7 +326,7 @@ defmodule Singularity.Workflow.WorkflowComposer do
 
     # Count successful compositions
     success_query =
-      from(w in SingularityWorkflowSchemas.Workflow,
+      from(w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
         where: w.inserted_at >= ^since_date and w.status == "completed",
         select: count(w.id)
       )
@@ -335,7 +335,7 @@ defmodule Singularity.Workflow.WorkflowComposer do
 
     # Count failed compositions
     failed_query =
-      from(w in SingularityWorkflowSchemas.Workflow,
+      from(w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
         where: w.inserted_at >= ^since_date and w.status == "failed",
         select: count(w.id)
       )
@@ -344,8 +344,8 @@ defmodule Singularity.Workflow.WorkflowComposer do
 
     # Calculate average execution time
     avg_time_query =
-      from(e in SingularityWorkflowSchemas.Execution,
-        join: w in SingularityWorkflowSchemas.Workflow,
+      from(e in Singularity.Workflow.Orchestrator.Schemas.Execution,
+        join: w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
         on: e.workflow_id == w.id,
         where:
           w.inserted_at >= ^since_date and e.status == "completed" and not is_nil(e.duration_ms),
@@ -356,8 +356,8 @@ defmodule Singularity.Workflow.WorkflowComposer do
 
     # Find most common goals
     goals_query =
-      from(tg in SingularityWorkflowSchemas.TaskGraph,
-        join: w in SingularityWorkflowSchemas.Workflow,
+      from(tg in Singularity.Workflow.Orchestrator.Schemas.TaskGraph,
+        join: w in Singularity.Workflow.Orchestrator.Schemas.Workflow,
         on: w.task_graph_id == tg.id,
         where: w.inserted_at >= ^since_date,
         group_by: tg.goal,
