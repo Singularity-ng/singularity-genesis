@@ -324,8 +324,8 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
   @spec get_step_metadata(t(), atom()) :: step_metadata()
   def get_step_metadata(%__MODULE__{step_metadata: metadata}, step_name) do
     Map.get(metadata, step_name, %{
-      initial_tasks: 1, 
-      timeout: nil, 
+      initial_tasks: 1,
+      timeout: nil,
       max_attempts: 3,
       execution: :sync,
       resources: [],
@@ -337,13 +337,14 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
   Get execution configuration for a step.
   """
   @spec get_step_execution_config(t(), atom()) :: %{
-    execution: :sync | :oban | :distributed,
-    resources: keyword(),
-    queue: atom() | nil,
-    timeout: integer() | nil
-  }
+          execution: :sync | :oban | :distributed,
+          resources: keyword(),
+          queue: atom() | nil,
+          timeout: integer() | nil
+        }
   def get_step_execution_config(definition, step_name) do
     metadata = get_step_metadata(definition, step_name)
+
     %{
       execution: metadata.execution,
       resources: metadata.resources,

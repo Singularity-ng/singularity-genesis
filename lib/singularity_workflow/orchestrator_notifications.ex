@@ -282,7 +282,7 @@ defmodule Singularity.Workflow.OrchestratorNotifications do
     import Ecto.Query
 
     base_query =
-      from(e in SingularityWorkflowSchemas.Event,
+      from(e in Singularity.Workflow.Orchestrator.Schemas.Event,
         order_by: [desc: e.timestamp],
         limit: ^limit,
         select: e

@@ -12,8 +12,13 @@ defmodule Singularity.Workflow.MixProject do
       package: package(),
       dialyzer: dialyzer(),
       aliases: aliases(),
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
+      test_coverage: [tool: ExCoveralls]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -30,9 +35,6 @@ defmodule Singularity.Workflow.MixProject do
 
   defp deps do
     [
-      # Schemas package - contains all Ecto schemas (no circular dependency!)
-      {:singularity_workflow_schemas, path: "../singularity_workflow_schemas"},
-
       # JSON handling
       {:jason, "~> 1.4"},
 

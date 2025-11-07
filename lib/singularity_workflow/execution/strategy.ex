@@ -23,11 +23,11 @@ defmodule Singularity.Workflow.Execution.Strategy do
   alias Singularity.Workflow.Execution.{DirectBackend, DistributedBackend, ObanBackend}
 
   @type execution_config :: %{
-    execution: :sync | :oban | :distributed,
-    resources: keyword(),
-    queue: atom() | nil,
-    timeout: integer() | nil
-  }
+          execution: :sync | :oban | :distributed,
+          resources: keyword(),
+          queue: atom() | nil,
+          timeout: integer() | nil
+        }
 
   @doc """
   Execute a step function using the specified execution strategy.
@@ -48,5 +48,6 @@ defmodule Singularity.Workflow.Execution.Strategy do
   @spec available?(:sync | :oban | :distributed) :: boolean()
   def available?(:sync), do: true
   def available?(:oban), do: Code.ensure_loaded?(Oban)
-  def available?(:distributed), do: false  # TODO: implement distributed backend
+  # TODO: implement distributed backend
+  def available?(:distributed), do: false
 end
