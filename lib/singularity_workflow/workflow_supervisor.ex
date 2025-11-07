@@ -119,8 +119,7 @@ defmodule Singularity.Workflow.WorkflowSupervisor do
   defp default_workflow_name(workflow_module) do
     workflow_module
     |> Module.split()
-    |> Enum.map(&Macro.underscore/1)
-    |> Enum.join(".")
+    |> Enum.map_join(".", &Macro.underscore/1)
   end
 
   defp resolve_repo(opts, workflow_module) do

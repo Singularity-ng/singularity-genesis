@@ -155,83 +155,81 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
        ) do
     elapsed = System.monotonic_time(:millisecond) - start_time
 
-    cond do
-      timeout != :infinity and elapsed > timeout ->
-        Logger.warning("Timeout exceeded",
-          run_id: run_id,
-          elapsed_ms: elapsed,
-          timeout_ms: timeout
-        )
+    if timeout != :infinity and elapsed > timeout do
+      Logger.warning("Timeout exceeded",
+        run_id: run_id,
+        elapsed_ms: elapsed,
+        timeout_ms: timeout
+      )
 
-        check_run_status(run_id, repo)
+      check_run_status(run_id, repo)
+    else
+      case poll_and_execute_batch(
+             workflow_slug,
+             definition,
+             repo,
+             worker_id,
+             batch_size,
+             max_poll_seconds,
+             poll_interval_ms,
+             task_timeout_ms
+           ) do
+        {:ok, :tasks_executed, count} ->
+          # Tasks completed, poll for next batch immediately
+          Logger.debug("Executed batch of tasks",
+            run_id: run_id,
+            task_count: count
+          )
 
-      true ->
-        case poll_and_execute_batch(
-               workflow_slug,
-               definition,
-               repo,
-               worker_id,
-               batch_size,
-               max_poll_seconds,
-               poll_interval_ms,
-               task_timeout_ms
-             ) do
-          {:ok, :tasks_executed, count} ->
-            # Tasks completed, poll for next batch immediately
-            Logger.debug("Executed batch of tasks",
-              run_id: run_id,
-              task_count: count
-            )
+          execute_loop(
+            run_id,
+            workflow_slug,
+            definition,
+            repo,
+            worker_id,
+            start_time,
+            timeout,
+            poll_interval_ms,
+            batch_size,
+            max_poll_seconds,
+            task_timeout_ms
+          )
 
-            execute_loop(
-              run_id,
-              workflow_slug,
-              definition,
-              repo,
-              worker_id,
-              start_time,
-              timeout,
-              poll_interval_ms,
-              batch_size,
-              max_poll_seconds,
-              task_timeout_ms
-            )
+        {:ok, :no_messages} ->
+          # No messages available, check run status
+          case check_run_status(run_id, repo) do
+            {:ok, output} when is_map(output) ->
+              # Run completed successfully
+              {:ok, output}
 
-          {:ok, :no_messages} ->
-            # No messages available, check run status
-            case check_run_status(run_id, repo) do
-              {:ok, output} when is_map(output) ->
-                # Run completed successfully
-                {:ok, output}
+            {:error, _} = error ->
+              error
 
-              {:error, _} = error ->
-                error
+            {:ok, :in_progress} ->
+              # Run still in progress, continue polling
+              execute_loop(
+                run_id,
+                workflow_slug,
+                definition,
+                repo,
+                worker_id,
+                start_time,
+                timeout,
+                poll_interval_ms,
+                batch_size,
+                max_poll_seconds,
+                task_timeout_ms
+              )
+          end
 
-              {:ok, :in_progress} ->
-                # Run still in progress, continue polling
-                execute_loop(
-                  run_id,
-                  workflow_slug,
-                  definition,
-                  repo,
-                  worker_id,
-                  start_time,
-                  timeout,
-                  poll_interval_ms,
-                  batch_size,
-                  max_poll_seconds,
-                  task_timeout_ms
-                )
-            end
+        {:error, reason} ->
+          Logger.error("Task execution failed",
+            run_id: run_id,
+            reason: inspect(reason)
+          )
 
-          {:error, reason} ->
-            Logger.error("Task execution failed",
-              run_id: run_id,
-              reason: inspect(reason)
-            )
-
-            {:error, reason}
-        end
+          {:error, reason}
+      end
     end
   end
 

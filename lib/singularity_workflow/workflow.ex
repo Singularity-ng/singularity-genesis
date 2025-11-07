@@ -11,9 +11,12 @@ defmodule Singularity.Workflow.Workflow do
   require Logger
   import Ecto.Query
 
-  alias Singularity.Workflow.DAG.{RunInitializer, TaskExecutor, WorkflowDefinition}
-  alias Singularity.Workflow.{StepState, WorkflowRun}
+  alias Singularity.Workflow.DAG.RunInitializer
+  alias Singularity.Workflow.DAG.TaskExecutor
+  alias Singularity.Workflow.DAG.WorkflowDefinition
   alias Singularity.Workflow.Runtime.Workflow, as: RuntimeWorkflow
+  alias Singularity.Workflow.StepState
+  alias Singularity.Workflow.WorkflowRun
 
   @type run_id :: Ecto.UUID.t()
   @default_poll_interval 200
@@ -193,9 +196,10 @@ defmodule Singularity.Workflow.Workflow do
         end
 
       throughput =
-        cond do
-          duration_ms == nil or duration_ms == 0 -> completed
-          true -> completed * 1000 / duration_ms
+        if duration_ms == nil or duration_ms == 0 do
+          completed
+        else
+          completed * 1000 / duration_ms
         end
 
       {:ok,

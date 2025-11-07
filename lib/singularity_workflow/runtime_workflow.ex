@@ -19,9 +19,7 @@ defmodule Singularity.Workflow.Runtime.Workflow do
     producer_pid = Keyword.get(opts, :producer_pid)
 
     # Validate workflow module
-    unless function_exported?(workflow_module, :__workflow_steps__, 0) do
-      {:error, "Workflow module #{inspect(workflow_module)} must implement __workflow_steps__/0"}
-    else
+    if function_exported?(workflow_module, :__workflow_steps__, 0) do
       # Create workflow process state
       state = %{
         workflow_name: workflow_name,
@@ -51,6 +49,8 @@ defmodule Singularity.Workflow.Runtime.Workflow do
 
           error
       end
+    else
+      {:error, "Workflow module #{inspect(workflow_module)} must implement __workflow_steps__/0"}
     end
   end
 
