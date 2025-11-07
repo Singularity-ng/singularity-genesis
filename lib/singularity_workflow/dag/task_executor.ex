@@ -42,8 +42,8 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
   require Logger
 
   alias Singularity.Workflow.DAG.WorkflowDefinition
-  alias Singularity.Workflow.WorkflowRun
   alias Singularity.Workflow.Execution.Strategy
+  alias Singularity.Workflow.WorkflowRun
 
   @doc """
   Execute all tasks for a workflow run until completion or failure.

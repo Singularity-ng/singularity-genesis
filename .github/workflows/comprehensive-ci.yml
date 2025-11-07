@@ -11,6 +11,10 @@ jobs:
   test:
     name: Test & Quality Checks
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      checks: write
 
     services:
       postgres:
@@ -115,6 +119,9 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    
+    permissions:
+      contents: read
     
     steps:
     - name: Checkout code
