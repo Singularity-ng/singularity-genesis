@@ -1,16 +1,45 @@
 # Release Process for Singularity.Workflow
 
-This document describes how to publish a new release of Singularity.Workflow to Hex.pm.
+This document describes how to publish a new release of Singularity.Workflow.
+
+## Two Release Options
+
+### Option 1: GitHub Release Only (No Hex.pm API Key Required)
+
+For creating GitHub releases without publishing to Hex.pm:
+
+```bash
+./scripts/release.sh 0.1.0 github
+```
+
+This uses `.github/workflows/release-github-only.yml` and:
+- Runs all CI tests automatically
+- Creates GitHub release with changelog
+- No Hex.pm credentials needed
+- You can publish to Hex.pm manually later
+
+### Option 2: Full Release (GitHub + Hex.pm)
+
+For publishing to both GitHub and Hex.pm:
+
+```bash
+./scripts/release.sh 0.1.0 hex
+```
+
+This uses `.github/workflows/publish.yml` and requires:
+- HEX_API_KEY secret configured
+- Production environment for manual approval
+- Publishes to Hex.pm automatically
 
 ## Prerequisites
 
-Before creating a release, ensure:
+### For GitHub-Only Releases
+
+No setup required - just push the tag.
+
+### For Hex.pm Releases
 
 1. **HEX_API_KEY Secret**: Add your Hex.pm API key to GitHub repository secrets
-   - Go to repository Settings → Secrets and variables → Actions
-   - Create a new secret named `HEX_API_KEY`
-   - Get your API key from: https://hex.pm/dashboard/keys
-
 2. **Production Environment**: Configure manual approval for releases
    - Go to repository Settings → Environments
    - Create an environment named `production`
@@ -20,13 +49,23 @@ Before creating a release, ensure:
 
 ## Quick Release
 
-Use the automated release script:
+### GitHub Only (Default)
 
 ```bash
 ./scripts/release.sh 0.1.0
 ```
 
-This will:
+or explicitly:
+
+```bash
+./scripts/release.sh 0.1.0 github
+```
+
+### GitHub + Hex.pm
+
+```bash
+./scripts/release.sh 0.1.0 hex
+```
 - Create a git tag `v0.1.0`
 - Push the tag to GitHub
 - Trigger the automated publish workflow
