@@ -1,4 +1,4 @@
-defmodule Singularity.Evolution.PatternCache do
+defmodule Singularity.Genesis.PatternCache do
   @moduledoc """
   ETS-based pattern cache for learned planning patterns.
 

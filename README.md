@@ -1,10 +1,10 @@
-# Singularity Evolution
+# Singularity Genesis
 
 Hot-reloadable adaptive planner with evolutionary learning for self-evolving agent systems.
 
 ## Overview
 
-Singularity Evolution is an adaptive planning and evolutionary improvement system that sits on top of [Singularity Workflow](https://github.com/Singularity-ng/singularity-workflows) to automatically optimize how task DAGs are generated and executed.
+Singularity Genesis is an adaptive planning and evolutionary improvement system that sits on top of [Singularity Workflow](https://github.com/Singularity-ng/singularity-workflows) to automatically optimize how task DAGs are generated and executed.
 
 **Key Features:**
 
@@ -18,7 +18,7 @@ Singularity Evolution is an adaptive planning and evolutionary improvement syste
 
 ```
 ┌─────────────────────────────────────┐
-│  singularity_evolution (THIS)      │
+│  singularity.genesis (THIS)      │
 │  ├─ AdaptivePlanner                │ ← LLM/Pattern-based planning
 │  ├─ EvolutionEngine                │ ← Fitness, mutation, selection
 │  └─ HotReloadManager               │ ← Live code updates
@@ -109,7 +109,7 @@ Where:
 ```elixir
 def deps do
   [
-    {:singularity_evolution, git: "https://github.com/Singularity-ng/singularity-evolution.git"}
+    {:singularity.genesis, git: "https://github.com/Singularity-ng/singularity.genesis.git"}
   ]
 end
 ```
@@ -165,7 +165,7 @@ IO.puts("Generation: #{evolution.generation}")
 
 ```elixir
 # config/config.exs
-config :singularity_evolution,
+config :singularity.genesis,
   evolution: [
     enabled: true,
     auto_evolve: true,
@@ -190,7 +190,7 @@ config :singularity_evolution,
 
 ## Integration with Singularity Workflow
 
-Singularity Evolution uses the [Lineage API](https://github.com/Singularity-ng/singularity-workflows) from Singularity Workflow:
+Singularity Genesis uses the [Lineage API](https://github.com/Singularity-ng/singularity-workflows) from Singularity Workflow:
 
 ```elixir
 # Get execution history for learning

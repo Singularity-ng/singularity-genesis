@@ -1,4 +1,4 @@
-defmodule Singularity.Evolution.EvolutionEngine do
+defmodule Singularity.Genesis.EvolutionEngine do
   @moduledoc """
   Evolutionary algorithm for planner improvement.
 
@@ -109,7 +109,7 @@ defmodule Singularity.Evolution.EvolutionEngine do
   end
 end
 
-defmodule Singularity.Evolution.EvolutionEngine.State do
+defmodule Singularity.Genesis.EvolutionEngine.State do
   @moduledoc """
   GenServer tracking evolution state and history.
   """

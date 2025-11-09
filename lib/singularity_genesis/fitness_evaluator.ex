@@ -1,4 +1,4 @@
-defmodule Singularity.Evolution.FitnessEvaluator do
+defmodule Singularity.Genesis.FitnessEvaluator do
   @moduledoc """
   Fitness scoring for planner variants and task graphs.
 

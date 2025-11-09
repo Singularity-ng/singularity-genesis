@@ -1,4 +1,4 @@
-defmodule Singularity.Evolution.HotReload do
+defmodule Singularity.Genesis.HotReload do
   @moduledoc """
   Hot-reload manager for live planner updates without downtime.
 
@@ -97,7 +97,7 @@ defmodule Singularity.Evolution.HotReload do
   end
 end
 
-defmodule Singularity.Evolution.HotReload.History do
+defmodule Singularity.Genesis.HotReload.History do
   @moduledoc """
   GenServer tracking hot reload history and backups.
   """

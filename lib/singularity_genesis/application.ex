@@ -1,6 +1,6 @@
-defmodule Singularity.Evolution.Application do
+defmodule Singularity.Genesis.Application do
   @moduledoc """
-  Singularity.Evolution application supervisor.
+  Singularity.Genesis application supervisor.
 
   Manages:
   - Pattern cache (ETS table)
@@ -13,18 +13,18 @@ defmodule Singularity.Evolution.Application do
 
   @impl true
   def start(_type, _args) do
-    Logger.info("Starting Singularity.Evolution")
+    Logger.info("Starting Singularity.Genesis")
 
     children = [
       # Pattern cache - ETS table for learned patterns
-      {Singularity.Evolution.PatternCache, []},
+      {Singularity.Genesis.PatternCache, []},
       # Evolution engine state
-      {Singularity.Evolution.EvolutionEngine.State, []},
+      {Singularity.Genesis.EvolutionEngine.State, []},
       # Hot reload history tracking
-      {Singularity.Evolution.HotReload.History, []}
+      {Singularity.Genesis.HotReload.History, []}
     ]
 
-    opts = [strategy: :one_for_one, name: Singularity.Evolution.Supervisor]
+    opts = [strategy: :one_for_one, name: Singularity.Genesis.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

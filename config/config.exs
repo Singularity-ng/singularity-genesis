@@ -1,6 +1,6 @@
 import Config
 
-config :singularity_evolution,
+config :singularity_genesis,
   evolution: [
     enabled: true,
     auto_evolve: false,

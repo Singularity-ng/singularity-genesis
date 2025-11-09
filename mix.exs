@@ -1,15 +1,15 @@
-defmodule SingularityEvolution.MixProject do
+defmodule SingularityGenesis.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :singularity_evolution,
+      app: :singularity_genesis,
       version: "0.1.0",
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description:
-        "Hot-reloadable adaptive planner with evolutionary learning for self-evolving agent systems",
+        "Adaptive goal-to-DAG planner with evolutionary learning for self-improving workflows",
       package: package(),
       dialyzer: [plt_add_app: :app_tree],
       test_coverage: [tool: ExCoveralls],
@@ -20,7 +20,7 @@ defmodule SingularityEvolution.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Singularity.Evolution.Application, []}
+      mod: {Singularity.Genesis.Application, []}
     ]
   end
 
@@ -49,11 +49,11 @@ defmodule SingularityEvolution.MixProject do
 
   defp package do
     [
-      name: "singularity_evolution",
+      name: "singularity_genesis",
       files: ~w(lib .formatter.exs mix.exs README.md LICENSE),
       maintainers: ["Singularity-ng"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/Singularity-ng/singularity-evolution"}
+      links: %{"GitHub" => "https://github.com/Singularity-ng/singularity-genesis"}
     ]
   end
 end

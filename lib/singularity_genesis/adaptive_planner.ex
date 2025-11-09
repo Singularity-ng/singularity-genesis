@@ -1,4 +1,4 @@
-defmodule Singularity.Evolution.AdaptivePlanner do
+defmodule Singularity.Genesis.AdaptivePlanner do
   @moduledoc """
   Adaptive goal-to-DAG planner with learned patterns.
 

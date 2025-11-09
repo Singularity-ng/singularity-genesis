@@ -1,8 +1,9 @@
-defmodule Singularity.Evolution do
+defmodule Singularity.Genesis do
   @moduledoc """
-  Singularity Evolution - Hot-reloadable adaptive planner with evolutionary learning.
+  Singularity Genesis - Adaptive goal-to-DAG planner with self-improving learning.
 
-  An adaptive planning and evolution system for self-improving agent workflows.
+  Genesis is the new unified adaptive planning system that replaces the hard-coded Genesis executor.
+  It's an adaptive planning and evolution system for self-improving agent workflows.
   Sits on top of Singularity.Workflow to generate and optimize task DAGs.
 
   ## Architecture
@@ -25,20 +26,20 @@ defmodule Singularity.Evolution do
   ## Usage
 
       # Simple planning with learned patterns
-      {:ok, task_graph} = Singularity.Evolution.AdaptivePlanner.plan(
+      {:ok, task_graph} = Singularity.Genesis.AdaptivePlanner.plan(
         "Build authentication system",
         %{resources: %{workers: 8}}
       )
 
       # Execute and learn automatically
-      {:ok, result} = Singularity.Evolution.AdaptivePlanner.execute_and_learn(
+      {:ok, result} = Singularity.Genesis.AdaptivePlanner.execute_and_learn(
         "Build authentication system",
         repo,
         learn: true
       )
 
       # Trigger evolution cycle
-      {:ok, evolution} = Singularity.Evolution.EvolutionEngine.trigger_evolution(
+      {:ok, evolution} = Singularity.Genesis.EvolutionEngine.trigger_evolution(
         population_size: 10,
         survivors: 3,
         mutation_rate: 0.3
@@ -46,7 +47,7 @@ defmodule Singularity.Evolution do
   """
 
   @doc """
-  Returns the version of singularity_evolution.
+  Returns the version of singularity_genesis.
   """
   def version, do: "0.1.0"
 end
