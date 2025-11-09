@@ -8,8 +8,7 @@ Complete documentation for the Singularity.Workflow library.
 
 ### Getting Started
 
-- **[README](../README.md)** - Project overview, features, and quick start
-- **[GETTING_STARTED](../GETTING_STARTED.md)** - Installation and first workflow
+- **[README](../README.md)** - Project overview, features, quick start, and installation guide
 - **[CHANGELOG](../CHANGELOG.md)** - Version history and release notes
 
 ### Core Documentation
@@ -71,7 +70,7 @@ Complete documentation for the Singularity.Workflow library.
 ### I want to...
 
 **Start using the library:**
-→ [README](../README.md) → [GETTING_STARTED](../GETTING_STARTED.md)
+→ [README](../README.md) (includes installation and quick start)
 
 **Understand the API:**
 → [API_REFERENCE](API_REFERENCE.md)
