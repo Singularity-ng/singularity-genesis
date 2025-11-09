@@ -451,8 +451,8 @@ mix dialyzer
 
 - Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) for internal design details
 - Check [DYNAMIC_WORKFLOWS_GUIDE.md](docs/DYNAMIC_WORKFLOWS_GUIDE.md) for advanced patterns
-- See [SINGULARITY_WORKFLOW_REFERENCE.md](docs/SINGULARITY_WORKFLOW_REFERENCE.md) for complete API documentation
-- Review [SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md) for security considerations
+- See [API_REFERENCE.md](docs/API_REFERENCE.md) for complete API documentation
+- Review [SECURITY.md](SECURITY.md) for security policy and best practices
 
 ## Contributing
 
