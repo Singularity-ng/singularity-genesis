@@ -9,7 +9,7 @@ defmodule Singularity.Workflow.IdempotencyTest do
   """
   use ExUnit.Case, async: true
 
-  alias Singularity.Workflow.{StepTask, Repo}
+  alias Singularity.Workflow.{Repo, StepTask}
   import Ecto.Query
 
   setup do

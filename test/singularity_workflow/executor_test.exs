@@ -56,7 +56,7 @@ end
 defmodule Singularity.Workflow.ExecutorTest do
   use ExUnit.Case, async: false
 
-  alias Singularity.Workflow.{Executor, WorkflowRun, StepState, Repo}
+  alias Singularity.Workflow.{Executor, Repo, StepState, WorkflowRun}
   import Ecto.Query
 
   @moduledoc """

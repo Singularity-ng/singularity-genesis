@@ -8,8 +8,8 @@ config :singularity_workflow, :clock, Singularity.Workflow.TestClock
 
 # Configure your database
 config :singularity_workflow, Singularity.Workflow.Repo,
-  username: System.get_env("PGUSER") || System.get_env("USER"),
-  password: System.get_env("PGPASSWORD") || "",
+  username: System.get_env("PGUSER") || "postgres",
+  password: System.get_env("PGPASSWORD") || "postgres",
   hostname: System.get_env("PGHOST") || "localhost",
   database: "singularity_workflow_test#{System.get_env("MIX_TEST_PARTITION")}",
   adapter: Ecto.Adapters.Postgres,

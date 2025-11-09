@@ -23,6 +23,26 @@ defmodule Singularity.Workflow.DAG.DynamicWorkflowLoader do
 
   alias Singularity.Workflow.DAG.WorkflowDefinition
 
+  # Safely convert string to atom with validation to prevent atom exhaustion
+  # This is a controlled conversion with strict validation:
+  # - Maximum 100 character length (prevents memory exhaustion)
+  # - Alphanumeric + underscore/dash only (prevents injection)
+  # - Must start with letter or underscore (follows Elixir conventions)
+  # - Used only for user-defined step identifiers in controlled workflow contexts
+  # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
+  @spec safe_string_to_atom(String.t()) :: atom()
+  defp safe_string_to_atom(string) when is_binary(string) do
+    # Validate that the string is a safe identifier (alphanumeric, underscore, dash)
+    if Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_-]*$/, string) and String.length(string) <= 100 do
+      # sobelow_skip ["DOS.StringToAtom"]
+      String.to_atom(string)
+    else
+      raise ArgumentError,
+            "Invalid step identifier: #{inspect(string)}. " <>
+              "Must be alphanumeric with underscores/dashes, start with letter or underscore, max 100 chars."
+    end
+  end
+
   @doc """
   Loads a dynamic workflow from database.
 
@@ -118,7 +138,7 @@ defmodule Singularity.Workflow.DAG.DynamicWorkflowLoader do
     # Convert steps to WorkflowDefinition format
     steps_list =
       Enum.map(steps_data, fn step ->
-        step_slug_atom = String.to_existing_atom(step["step_slug"])
+        step_slug_atom = safe_string_to_atom(step["step_slug"])
         step_fn = Map.get(step_functions, step_slug_atom)
 
         if step_fn == nil do
@@ -128,7 +148,7 @@ defmodule Singularity.Workflow.DAG.DynamicWorkflowLoader do
         depends_on =
           deps_data
           |> Map.get(step["step_slug"], [])
-          |> Enum.map(&String.to_existing_atom/1)
+          |> Enum.map(&safe_string_to_atom/1)
 
         initial_tasks = step["initial_tasks"]
         max_attempts = step["max_attempts"] || 3

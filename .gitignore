@@ -36,6 +36,7 @@ singularity_workflow-*.tar
 # Database files
 .postgres_data/
 .postgres.log
+.postgres_pid
 
 # Dialyzer
 /priv/plts/*.plt

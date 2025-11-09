@@ -1,9 +1,9 @@
 {
   "dependencies": {
+    "fetch": [],
     "analyze": [
       "fetch"
     ],
-    "fetch": [],
     "save": [
       "analyze",
       "summarize"
@@ -12,13 +12,13 @@
       "fetch"
     ]
   },
-  "root_steps": [
-    "fetch"
-  ],
   "steps": [
     "fetch",
     "analyze",
-    "summarize",
-    "save"
+    "save",
+    "summarize"
+  ],
+  "root_steps": [
+    "fetch"
   ]
 }
