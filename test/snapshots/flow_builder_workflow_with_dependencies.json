@@ -1,4 +1,5 @@
 {
+  "timeout": 60,
   "max_attempts": 3,
   "steps": [
     {
@@ -11,12 +12,11 @@
     },
     {
       "depends_on": [
-        "a",
-        "b"
+        "b",
+        "a"
       ],
       "step_slug": "merge"
     }
   ],
-  "timeout": 60,
   "workflow_slug": "test_get_multidep"
 }

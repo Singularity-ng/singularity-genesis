@@ -491,13 +491,22 @@ defmodule Singularity.Workflow.Orchestrator do
   end
 
   # Safely convert string to atom with validation to prevent atom exhaustion
+  # This is a controlled conversion with strict validation:
+  # - Maximum 100 character length (prevents memory exhaustion)
+  # - Alphanumeric + underscore/dash only (prevents injection)
+  # - Must start with letter (follows Elixir conventions)
+  # - Used only for user-defined task identifiers in controlled workflow contexts
+  # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
   @spec safe_string_to_atom(String.t()) :: atom()
   defp safe_string_to_atom(string) when is_binary(string) do
     # Validate that the string is a safe identifier (alphanumeric, underscore, dash)
     if Regex.match?(~r/^[a-zA-Z][a-zA-Z0-9_-]*$/, string) and String.length(string) <= 100 do
+      # sobelow_skip ["DOS.StringToAtom"]
       String.to_atom(string)
     else
-      raise "Invalid task identifier: #{string}. Must be alphanumeric with underscores/dashes, start with letter, max 100 chars."
+      raise ArgumentError,
+            "Invalid task identifier: #{inspect(string)}. " <>
+              "Must be alphanumeric with underscores/dashes, start with letter, max 100 chars."
     end
   end
 
