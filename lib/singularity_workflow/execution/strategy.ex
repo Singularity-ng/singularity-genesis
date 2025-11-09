@@ -48,6 +48,5 @@ defmodule Singularity.Workflow.Execution.Strategy do
   @spec available?(:sync | :oban | :distributed) :: boolean()
   def available?(:sync), do: true
   def available?(:oban), do: Code.ensure_loaded?(Oban)
-  # TODO: implement distributed backend
-  def available?(:distributed), do: false
+  def available?(:distributed), do: DistributedBackend.available?()
 end
