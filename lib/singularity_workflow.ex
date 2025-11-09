@@ -203,26 +203,26 @@ defmodule Singularity.Workflow do
   See `Singularity.Workflow.Executor` for execution options and `Singularity.Workflow.DAG.WorkflowDefinition`
   for workflow syntax details.
 
-  ## Real-time Notifications
+  ## Real-time Messaging
 
-  singularity_workflow includes `Singularity.Workflow.Notifications` for real-time workflow events with comprehensive logging:
+  singularity_workflow provides complete messaging infrastructure via PostgreSQL NOTIFY (NATS replacement):
 
-      # Send workflow event with NOTIFY
+      # Send workflow message with NOTIFY
       {:ok, message_id} = Singularity.Workflow.Notifications.send_with_notify(
-        "workflow_events", 
-        %{type: "task_completed", task_id: "123"}, 
+        "workflow_events",
+        %{type: "task_completed", task_id: "123"},
         MyApp.Repo
       )
 
-      # Listen for real-time workflow events
+      # Listen for real-time workflow messages
       {:ok, pid} = Singularity.Workflow.Notifications.listen("workflow_events", MyApp.Repo)
-      
-      # All NOTIFY events are automatically logged with structured data:
-      # - Queue names, message IDs, timing, message types
+
+      # All messages are automatically logged with structured data:
+      # - Channel names, message IDs, timing, message types
       # - Success/error logging with context
       # - Performance metrics and debugging information
 
-  ### Notification Types
+  ### Message Types
 
   | Event Type | Description | Payload |
   |------------|-------------|---------|
@@ -282,7 +282,7 @@ defmodule Singularity.Workflow do
       )
   """
 
-  # Notification functions
+  # Messaging functions (PostgreSQL NOTIFY - NATS replacement)
   defdelegate send_with_notify(queue, message, repo), to: Singularity.Workflow.Notifications
   defdelegate listen(queue, repo), to: Singularity.Workflow.Notifications
   defdelegate unlisten(listener_pid, repo), to: Singularity.Workflow.Notifications

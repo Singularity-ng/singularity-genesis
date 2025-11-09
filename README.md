@@ -9,7 +9,7 @@
 
 **Production-ready Elixir library for workflow orchestration with database-driven DAG execution.**
 
-Singularity.Workflow is a **library** that you add to your Elixir applications to provide reliable, scalable workflow execution using PostgreSQL + pgmq extension with real-time notifications via PostgreSQL NOTIFY.
+Singularity.Workflow is a **library** that you add to your Elixir applications to provide reliable, scalable workflow execution using PostgreSQL + pgmq extension with real-time messaging via PostgreSQL NOTIFY (NATS replacement).
 
 ## What is this?
 
@@ -18,7 +18,7 @@ Singularity.Workflow is a **library** that you add to your Elixir applications t
 ## 🚀 Features
 
 - ✅ **Database-Driven DAGs** - Workflows stored and executed via PostgreSQL
-- ✅ **Real-time Notifications** - PostgreSQL NOTIFY for instant event delivery
+- ✅ **Real-time Messaging** - PostgreSQL NOTIFY for instant message delivery (NATS replacement)
 - ✅ **Parallel Execution** - Independent branches run concurrently
 - ✅ **Multi-Instance Scaling** - Horizontal scaling via pgmq + PostgreSQL
 - ✅ **Comprehensive Logging** - Structured logging for all workflow events
@@ -33,7 +33,7 @@ Singularity.Workflow is a **library** that you add to your Elixir applications t
 
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
-- [Real-time Notifications](#real-time-notifications)
+- [Real-time Messaging](#real-time-messaging)
 - [Workflow Types](#workflow-types)
 - [HTDAG Orchestration](#htdag-orchestration)
 - [API Reference](#api-reference)
@@ -124,23 +124,23 @@ graph TB
     B --> C[PostgreSQL + pgmq]
     C --> D[Task Execution]
     D --> E[PostgreSQL NOTIFY]
-    E --> F[Real-time Updates]
-    
+    E --> F[Real-time Messaging]
+
     subgraph "Database Layer"
         C
         G[workflows table]
         H[tasks table]
         I[pgmq queues]
     end
-    
+
     subgraph "Execution Layer"
         B
         J[Task Scheduler]
         K[Dependency Resolver]
         L[Parallel Executor]
     end
-    
-    subgraph "Notification Layer"
+
+    subgraph "Messaging Layer"
         E
         M[Singularity.Workflow.Notifications]
         N[Event Listeners]
@@ -153,15 +153,15 @@ graph TB
 |-----------|---------|--------------|
 | **Singularity.Workflow.Executor** | Workflow execution engine | Static/dynamic workflows, parallel execution |
 | **Singularity.Workflow.FlowBuilder** | Dynamic workflow creation | Runtime workflow generation, AI/LLM integration |
-| **Singularity.Workflow.Notifications** | Real-time event delivery | PostgreSQL NOTIFY, structured logging |
+| **Singularity.Workflow.Notifications** | Real-time messaging | PostgreSQL NOTIFY messaging, structured logging |
 | **PostgreSQL + pgmq** | Data persistence & coordination | ACID transactions, message queuing |
 | **Task Scheduler** | Dependency resolution | DAG traversal, parallel execution |
 
-## 🔔 Real-time Notifications
+## 🔔 Real-time Messaging
 
-Singularity.Workflow includes comprehensive real-time notification support via PostgreSQL NOTIFY:
+Singularity.Workflow provides a complete messaging infrastructure via PostgreSQL NOTIFY (NATS replacement):
 
-### Send Notifications
+### Send Messages
 
 ```elixir
 # Send workflow event with NOTIFY
@@ -178,17 +178,17 @@ Singularity.Workflow includes comprehensive real-time notification support via P
 )
 ```
 
-### Listen for Events
+### Listen for Messages
 
 ```elixir
-# Start listening for workflow events
+# Start listening for workflow messages
 {:ok, listener_pid} = Singularity.Workflow.Notifications.listen("workflow_events", MyApp.Repo)
 
-# Handle notifications
+# Handle messages
 receive do
   {:notification, ^listener_pid, channel, message_id} ->
-    Logger.info("Workflow event received: #{channel} -> #{message_id}")
-    # Process the notification...
+    Logger.info("Workflow message received: #{channel} -> #{message_id}")
+    # Process the message...
 after
   5000 -> :timeout
 end
