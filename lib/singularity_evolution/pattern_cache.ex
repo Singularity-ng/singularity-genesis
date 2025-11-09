@@ -46,6 +46,7 @@ defmodule Singularity.Evolution.PatternCache do
       {:write_concurrency, true},
       {:read_concurrency, true}
     ])
+
     {:ok, %{max_size: 10_000, eviction_policy: :lru}}
   end
 

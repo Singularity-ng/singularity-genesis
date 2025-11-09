@@ -1,6 +1,6 @@
 [
   inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"],
   line_length: 100,
-  import_deps: [:ecto, :phoenix],
+  import_deps: [:ecto],
   subdirectories: ["priv/*/migrations"]
 ]

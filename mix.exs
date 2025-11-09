@@ -8,9 +8,10 @@ defmodule SingularityEvolution.MixProject do
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      description: "Hot-reloadable adaptive planner with evolutionary learning for self-evolving agent systems",
+      description:
+        "Hot-reloadable adaptive planner with evolutionary learning for self-evolving agent systems",
       package: package(),
-      dialyzer: [plt_add_deps: :transitive],
+      dialyzer: [plt_add_app: :app_tree],
       test_coverage: [tool: ExCoveralls],
       elixirc_paths: elixirc_paths(Mix.env())
     ]
@@ -35,7 +36,6 @@ defmodule SingularityEvolution.MixProject do
       {:req, "~> 0.5"},
 
       # Testing
-      {:ex_unit_fixtures, "~> 0.0.2", only: :test},
       {:ex_machina, "~> 2.8", only: :test},
       {:mox, "~> 1.0", only: :test},
 
