@@ -46,8 +46,8 @@ end
 defmodule Singularity.Workflow.DAG.TaskExecutorTest do
   use ExUnit.Case, async: false
 
-  alias Singularity.Workflow.{Executor, WorkflowRun, StepState, StepTask, Repo}
-  alias Singularity.Workflow.DAG.{TaskExecutor, RunInitializer, WorkflowDefinition}
+  alias Singularity.Workflow.{Executor, Repo, StepState, StepTask, WorkflowRun}
+  alias Singularity.Workflow.DAG.{RunInitializer, TaskExecutor, WorkflowDefinition}
   import Ecto.Query
 
   @moduledoc """

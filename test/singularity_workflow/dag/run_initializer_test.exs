@@ -79,7 +79,7 @@ defmodule Singularity.Workflow.DAG.RunInitializerTest do
   use ExUnit.Case, async: false
 
   alias Singularity.Workflow.DAG.{RunInitializer, WorkflowDefinition}
-  alias Singularity.Workflow.{WorkflowRun, StepState, StepDependency, Repo}
+  alias Singularity.Workflow.{Repo, StepDependency, StepState, WorkflowRun}
   import Ecto.Query
 
   @moduledoc """
@@ -266,7 +266,7 @@ defmodule Singularity.Workflow.DAG.RunInitializerTest do
       assert length(step_states) == 1
 
       deps = Repo.all(from(d in StepDependency, where: d.run_id == ^run_id))
-      assert length(deps) == 0
+      assert deps == []
     end
 
     test "handles multiple root steps (fan-out)" do
@@ -305,7 +305,7 @@ defmodule Singularity.Workflow.DAG.RunInitializerTest do
 
       # No dependencies
       deps = Repo.all(from(d in StepDependency, where: d.run_id == ^run_id))
-      assert length(deps) == 0
+      assert deps == []
     end
 
     test "handles complex input data structures" do

@@ -407,7 +407,7 @@ defmodule Singularity.Workflow.Orchestrator do
 
     %{
       tasks: Enum.into(tasks_with_depth, %{}, &{&1.id, &1}),
-      root_tasks: Enum.filter(tasks_with_depth, &(length(&1.depends_on) == 0)),
+      root_tasks: Enum.filter(tasks_with_depth, &(&1.depends_on == [])),
       max_depth: max_depth,
       created_at: DateTime.utc_now()
     }
@@ -436,7 +436,7 @@ defmodule Singularity.Workflow.Orchestrator do
   end
 
   defp calculate_task_depth(task, task_map, depths) do
-    if length(task.depends_on) == 0 do
+    if task.depends_on == [] do
       0
     else
       max_dependency_depth =
