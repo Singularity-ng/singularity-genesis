@@ -3,13 +3,13 @@ defmodule Singularity.Workflow.Execution.Strategy do
   Execution strategy for workflow steps.
 
   Provides different execution modes:
-  - `:sync` - Execute synchronously in the current process
+  - `:local` - Execute locally in the current process
   - `:distributed` - Execute across multiple nodes using PostgreSQL + pgmq
 
   ## Usage
 
-      # Synchronous execution (default)
-      Strategy.execute(step_fn, input, %{execution: :sync})
+      # Local execution (default)
+      Strategy.execute(step_fn, input, %{execution: :local})
 
       # Distributed execution across nodes
       Strategy.execute(step_fn, input, %{
@@ -29,7 +29,7 @@ defmodule Singularity.Workflow.Execution.Strategy do
   alias Singularity.Workflow.Execution.{DirectBackend, DistributedBackend}
 
   @type execution_config :: %{
-          execution: :sync | :distributed,
+          execution: :local | :distributed,
           resources: keyword(),
           queue: atom() | nil,
           timeout: integer() | nil
@@ -41,7 +41,7 @@ defmodule Singularity.Workflow.Execution.Strategy do
   @spec execute(function(), any(), execution_config(), map()) :: {:ok, any()} | {:error, term()}
   def execute(step_fn, input, config, context \\ %{}) do
     case config.execution do
-      :sync -> DirectBackend.execute(step_fn, input, config, context)
+      :local -> DirectBackend.execute(step_fn, input, config, context)
       :distributed -> DistributedBackend.execute(step_fn, input, config, context)
       other -> {:error, {:unsupported_execution_mode, other}}
     end
@@ -50,7 +50,7 @@ defmodule Singularity.Workflow.Execution.Strategy do
   @doc """
   Check if an execution mode is available.
   """
-  @spec available?(:sync | :distributed) :: boolean()
-  def available?(:sync), do: true
+  @spec available?(:local | :distributed) :: boolean()
+  def available?(:local), do: true
   def available?(:distributed), do: DistributedBackend.available?()
 end

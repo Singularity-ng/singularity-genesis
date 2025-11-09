@@ -125,6 +125,7 @@ defmodule Singularity.Workflow.StepTask do
 
   @type t :: %__MODULE__{
           run_id: Ecto.UUID.t() | nil,
+          tenant_id: Ecto.UUID.t() | nil,
           step_slug: String.t() | nil,
           task_index: integer() | nil,
           workflow_slug: String.t() | nil,
@@ -149,6 +150,7 @@ defmodule Singularity.Workflow.StepTask do
 
   schema "workflow_step_tasks" do
     field(:run_id, :binary_id)
+    field(:tenant_id, :binary_id)
     field(:step_slug, :string)
     field(:task_index, :integer, default: 0)
     field(:workflow_slug, :string)
@@ -204,6 +206,7 @@ defmodule Singularity.Workflow.StepTask do
     step_task
     |> cast(attrs, [
       :run_id,
+      :tenant_id,
       :step_slug,
       :task_index,
       :workflow_slug,

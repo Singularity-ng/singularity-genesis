@@ -443,11 +443,11 @@ opts = [
   max_retries: 3,            # Retry failed tasks
   parallel: true,            # Enable parallel execution
   notify_events: true,       # Send NOTIFY events
-  execution: :sync           # :sync (local) or :distributed (multi-node)
+  execution: :local          # :local (this node) or :distributed (multi-node)
 ]
 
 # Execution strategies
-execution: :sync         # Execute locally in current process (default)
+execution: :local        # Execute locally on this node (default)
 execution: :distributed  # Execute across multiple nodes via PostgreSQL + pgmq
 ```
 

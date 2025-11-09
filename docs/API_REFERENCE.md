@@ -509,7 +509,7 @@ step_functions = %{
 
 Control WHERE and HOW workflow tasks execute.
 
-### Synchronous Execution (`:sync`)
+### Local Execution (`:local`)
 
 **What it does:** Executes tasks in the current process sequentially or in parallel based on dependencies.
 
@@ -518,8 +518,8 @@ Control WHERE and HOW workflow tasks execute.
 ```elixir
 def __workflow_steps__ do
   [
-    {:step1, &__MODULE__.step1/1, depends_on: [], execution: :sync},
-    {:step2, &__MODULE__.step2/1, depends_on: [:step1], execution: :sync}
+    {:step1, &__MODULE__.step1/1, depends_on: [], execution: :local},
+    {:step2, &__MODULE__.step2/1, depends_on: [:step1], execution: :local}
   ]
 end
 ```
@@ -579,7 +579,7 @@ end
 | **Messaging** | `send_with_notify/listen/unlisten` | Real-time communication, event-driven architectures |
 | **HTDAG** | `Orchestrator.execute_goal` | AI/LLM goal → task graph → execution |
 | **Dynamic Workflows** | `FlowBuilder.create_flow/add_step` | Runtime workflow generation |
-| **Execution Strategies** | `:sync` / `:distributed` | Local vs distributed execution |
+| **Execution Strategies** | `:local` / `:distributed` | Local vs distributed execution |
 
 ### Key Design Principles
 

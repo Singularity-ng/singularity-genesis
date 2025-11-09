@@ -124,6 +124,7 @@ defmodule Singularity.Workflow.StepState do
 
   @type t :: %__MODULE__{
           run_id: Ecto.UUID.t() | nil,
+          tenant_id: Ecto.UUID.t() | nil,
           step_slug: String.t() | nil,
           workflow_slug: String.t() | nil,
           status: String.t() | nil,
@@ -144,6 +145,7 @@ defmodule Singularity.Workflow.StepState do
 
   schema "workflow_step_states" do
     field(:run_id, :binary_id)
+    field(:tenant_id, :binary_id)
     field(:step_slug, :string)
     field(:workflow_slug, :string)
 
@@ -195,6 +197,7 @@ defmodule Singularity.Workflow.StepState do
     step_state
     |> cast(attrs, [
       :run_id,
+      :tenant_id,
       :step_slug,
       :workflow_slug,
       :status,
