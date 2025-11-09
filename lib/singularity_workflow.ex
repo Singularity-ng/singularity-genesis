@@ -155,6 +155,45 @@ defmodule Singularity.Workflow do
         ]
       end
 
+  ## Workflow Lifecycle Management
+
+  Control running workflows with lifecycle management functions:
+
+  ```elixir
+  # Start a workflow
+  {:ok, result, run_id} = Singularity.Workflow.Executor.execute(
+    MyWorkflow,
+    %{user_id: 123},
+    MyApp.Repo
+  )
+
+  # Check status
+  {:ok, :in_progress, %{total_steps: 5, completed_steps: 2}} =
+    Singularity.Workflow.get_run_status(run_id, MyApp.Repo)
+
+  # List all running workflows
+  {:ok, runs} = Singularity.Workflow.list_workflow_runs(MyApp.Repo, status: "started")
+
+  # Pause execution
+  :ok = Singularity.Workflow.pause_workflow_run(run_id, MyApp.Repo)
+
+  # Resume execution
+  :ok = Singularity.Workflow.resume_workflow_run(run_id, MyApp.Repo)
+
+  # Cancel workflow
+  :ok = Singularity.Workflow.cancel_workflow_run(
+    run_id,
+    MyApp.Repo,
+    reason: "User requested cancellation"
+  )
+
+  # Retry failed workflow
+  {:ok, new_run_id} = Singularity.Workflow.retry_failed_workflow(
+    failed_run_id,
+    MyApp.Repo
+  )
+  ```
+
   ## Requirements
 
   - **PostgreSQL 12+**
@@ -243,10 +282,19 @@ defmodule Singularity.Workflow do
       )
   """
 
+  # Notification functions
   defdelegate send_with_notify(queue, message, repo), to: Singularity.Workflow.Notifications
   defdelegate listen(queue, repo), to: Singularity.Workflow.Notifications
   defdelegate unlisten(listener_pid, repo), to: Singularity.Workflow.Notifications
   defdelegate notify_only(channel, payload, repo), to: Singularity.Workflow.Notifications
+
+  # Workflow lifecycle management functions
+  defdelegate cancel_workflow_run(run_id, repo, opts \\ []), to: Singularity.Workflow.Executor
+  defdelegate list_workflow_runs(repo, filters \\ []), to: Singularity.Workflow.Executor
+  defdelegate retry_failed_workflow(run_id, repo, opts \\ []), to: Singularity.Workflow.Executor
+  defdelegate pause_workflow_run(run_id, repo), to: Singularity.Workflow.Executor
+  defdelegate resume_workflow_run(run_id, repo), to: Singularity.Workflow.Executor
+  defdelegate get_run_status(run_id, repo), to: Singularity.Workflow.Executor
 
   @doc """
   Returns the current version of singularity_workflow.

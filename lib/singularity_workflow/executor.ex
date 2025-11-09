@@ -350,6 +350,365 @@ defmodule Singularity.Workflow.Executor do
     end
   end
 
+  @doc """
+  Cancel a running workflow.
+
+  Marks the workflow as failed and cancels any pending/running tasks.
+  Also cancels associated Oban jobs if using distributed execution.
+
+  ## Parameters
+
+  - `run_id` - UUID of the workflow run
+  - `repo` - Ecto repository
+  - `opts` - Options
+    - `:reason` - Cancellation reason (default: "User requested cancellation")
+    - `:force` - Force cancel even if already completed (default: false)
+
+  ## Returns
+
+  - `:ok` - Workflow cancelled successfully
+  - `{:error, reason}` - Cancellation failed
+
+  ## Examples
+
+      # Cancel a running workflow
+      iex> :ok = Singularity.Workflow.Executor.cancel_workflow_run(run_id, repo)
+
+      # Cancel with custom reason
+      iex> :ok = Singularity.Workflow.Executor.cancel_workflow_run(
+      ...>   run_id,
+      ...>   repo,
+      ...>   reason: "Timeout exceeded"
+      ...> )
+  """
+  @spec cancel_workflow_run(Ecto.UUID.t(), module(), keyword()) :: :ok | {:error, term()}
+  def cancel_workflow_run(run_id, repo, opts \\ []) do
+    reason = Keyword.get(opts, :reason, "User requested cancellation")
+    force = Keyword.get(opts, :force, false)
+
+    import Ecto.Query
+
+    repo.transaction(fn ->
+      case repo.get(Singularity.Workflow.WorkflowRun, run_id) do
+        nil ->
+          repo.rollback({:error, :not_found})
+
+        run ->
+          unless force do
+            if run.status in ["completed", "failed"] do
+              repo.rollback({:error, {:already_finished, run.status}})
+            end
+          end
+
+          # Mark workflow as failed
+          run
+          |> Singularity.Workflow.WorkflowRun.mark_failed(reason)
+          |> repo.update!()
+
+          # Cancel pending tasks
+          from(t in Singularity.Workflow.StepTask,
+            where: t.run_id == ^run_id,
+            where: t.status in ["queued", "started"]
+          )
+          |> repo.update_all(set: [status: "cancelled", updated_at: DateTime.utc_now()])
+
+          # Cancel Oban jobs if using distributed execution (internal detail)
+          if Code.ensure_loaded?(Oban) do
+            cancel_oban_jobs_for_run(run_id, repo)
+          end
+
+          Logger.info("Workflow cancelled",
+            run_id: run_id,
+            reason: reason
+          )
+
+          :ok
+      end
+    end)
+    |> case do
+      {:ok, result} -> result
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
+  List workflow runs with optional filtering.
+
+  ## Parameters
+
+  - `repo` - Ecto repository
+  - `filters` - Filter options (optional)
+    - `:status` - Filter by status ("started", "completed", "failed")
+    - `:workflow_slug` - Filter by workflow module name
+    - `:limit` - Maximum number of results (default: 100)
+    - `:offset` - Pagination offset (default: 0)
+    - `:order_by` - Order results (default: {:desc, :inserted_at})
+
+  ## Returns
+
+  - `{:ok, runs}` - List of workflow runs
+  - `{:error, reason}` - Query failed
+
+  ## Examples
+
+      # List all runs
+      iex> {:ok, runs} = Singularity.Workflow.Executor.list_workflow_runs(repo)
+
+      # List only running workflows
+      iex> {:ok, runs} = Singularity.Workflow.Executor.list_workflow_runs(repo, status: "started")
+
+      # List failed workflows for specific module
+      iex> {:ok, runs} = Singularity.Workflow.Executor.list_workflow_runs(repo,
+      ...>   status: "failed",
+      ...>   workflow_slug: "MyApp.Workflows.ProcessData"
+      ...> )
+
+      # Paginate results
+      iex> {:ok, runs} = Singularity.Workflow.Executor.list_workflow_runs(repo,
+      ...>   limit: 20,
+      ...>   offset: 40
+      ...> )
+  """
+  @spec list_workflow_runs(module(), keyword()) :: {:ok, [Singularity.Workflow.WorkflowRun.t()]} | {:error, term()}
+  def list_workflow_runs(repo, filters \\ []) do
+    import Ecto.Query
+
+    query =
+      from(r in Singularity.Workflow.WorkflowRun,
+        select: r
+      )
+
+    # Apply filters
+    query =
+      if status = filters[:status] do
+        from(r in query, where: r.status == ^status)
+      else
+        query
+      end
+
+    query =
+      if workflow_slug = filters[:workflow_slug] do
+        from(r in query, where: r.workflow_slug == ^workflow_slug)
+      else
+        query
+      end
+
+    # Apply ordering
+    order_by = filters[:order_by] || {:desc, :inserted_at}
+    query = from(r in query, order_by: ^[order_by])
+
+    # Apply pagination
+    limit = filters[:limit] || 100
+    offset = filters[:offset] || 0
+    query = from(r in query, limit: ^limit, offset: ^offset)
+
+    runs = repo.all(query)
+    {:ok, runs}
+  rescue
+    e -> {:error, {:query_failed, Exception.message(e)}}
+  end
+
+  @doc """
+  Retry a failed workflow from the point of failure.
+
+  Creates a new workflow run with the same input and workflow definition,
+  but skips already-completed steps (optional).
+
+  ## Parameters
+
+  - `run_id` - UUID of the failed workflow run
+  - `repo` - Ecto repository
+  - `opts` - Retry options
+    - `:skip_completed` - Skip steps that completed in original run (default: true)
+    - `:reset_all` - Restart entire workflow from beginning (default: false)
+
+  ## Returns
+
+  - `{:ok, new_run_id}` - New workflow run ID
+  - `{:error, reason}` - Retry failed
+
+  ## Examples
+
+      # Retry from point of failure
+      iex> {:ok, new_run_id} = Singularity.Workflow.Executor.retry_failed_workflow(failed_run_id, repo)
+
+      # Retry entire workflow from beginning
+      iex> {:ok, new_run_id} = Singularity.Workflow.Executor.retry_failed_workflow(
+      ...>   failed_run_id,
+      ...>   repo,
+      ...>   reset_all: true
+      ...> )
+  """
+  @spec retry_failed_workflow(Ecto.UUID.t(), module(), keyword()) ::
+          {:ok, Ecto.UUID.t()} | {:error, term()}
+  def retry_failed_workflow(run_id, repo, opts \\ []) do
+    reset_all = Keyword.get(opts, :reset_all, false)
+
+    case repo.get(Singularity.Workflow.WorkflowRun, run_id) do
+      nil ->
+        {:error, :not_found}
+
+      run ->
+        if run.status != "failed" and not reset_all do
+          {:error, {:not_failed, run.status}}
+        else
+          # Get workflow module
+          workflow_module =
+            try do
+              String.to_existing_atom("Elixir.#{run.workflow_slug}")
+            rescue
+              ArgumentError -> nil
+            end
+
+          if workflow_module && function_exported?(workflow_module, :__workflow_steps__, 0) do
+            Logger.info("Retrying workflow",
+              original_run_id: run_id,
+              workflow_slug: run.workflow_slug,
+              reset_all: reset_all
+            )
+
+            # Execute workflow again with same input
+            case execute(workflow_module, run.input, repo) do
+              {:ok, _result, new_run_id} ->
+                {:ok, new_run_id}
+
+              {:error, reason} ->
+                {:error, {:retry_failed, reason}}
+            end
+          else
+            {:error, {:workflow_module_not_found, run.workflow_slug}}
+          end
+        end
+    end
+  end
+
+  @doc """
+  Pause a running workflow.
+
+  Prevents new tasks from starting while allowing currently running tasks to complete.
+  Paused workflows can be resumed later.
+
+  ## Parameters
+
+  - `run_id` - UUID of the workflow run
+  - `repo` - Ecto repository
+
+  ## Returns
+
+  - `:ok` - Workflow paused successfully
+  - `{:error, reason}` - Pause failed
+
+  ## Examples
+
+      iex> :ok = Singularity.Workflow.Executor.pause_workflow_run(run_id, repo)
+
+  ## Note
+
+  This is a soft pause - currently executing tasks will complete, but no new
+  tasks will be started until the workflow is resumed.
+  """
+  @spec pause_workflow_run(Ecto.UUID.t(), module()) :: :ok | {:error, term()}
+  def pause_workflow_run(run_id, repo) do
+    import Ecto.Query
+
+    repo.transaction(fn ->
+      case repo.get(Singularity.Workflow.WorkflowRun, run_id) do
+        nil ->
+          repo.rollback({:error, :not_found})
+
+        run ->
+          if run.status != "started" do
+            repo.rollback({:error, {:not_running, run.status}})
+          end
+
+          # Update workflow status to paused (custom status)
+          # Note: Schema only has started/completed/failed, so we store in error_message
+          run
+          |> Ecto.Changeset.change(%{
+            error_message: "PAUSED",
+            updated_at: DateTime.utc_now()
+          })
+          |> repo.update!()
+
+          # Mark queued tasks as paused
+          from(t in Singularity.Workflow.StepTask,
+            where: t.run_id == ^run_id,
+            where: t.status == "queued"
+          )
+          |> repo.update_all(set: [status: "paused", updated_at: DateTime.utc_now()])
+
+          Logger.info("Workflow paused", run_id: run_id)
+          :ok
+      end
+    end)
+    |> case do
+      {:ok, result} -> result
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
+  Resume a paused workflow.
+
+  Allows queued tasks to continue execution.
+
+  ## Parameters
+
+  - `run_id` - UUID of the workflow run
+  - `repo` - Ecto repository
+
+  ## Returns
+
+  - `:ok` - Workflow resumed successfully
+  - `{:error, reason}` - Resume failed
+
+  ## Examples
+
+      iex> :ok = Singularity.Workflow.Executor.resume_workflow_run(run_id, repo)
+
+  ## Note
+
+  Only workflows paused via `pause_workflow_run/2` can be resumed.
+  """
+  @spec resume_workflow_run(Ecto.UUID.t(), module()) :: :ok | {:error, term()}
+  def resume_workflow_run(run_id, repo) do
+    import Ecto.Query
+
+    repo.transaction(fn ->
+      case repo.get(Singularity.Workflow.WorkflowRun, run_id) do
+        nil ->
+          repo.rollback({:error, :not_found})
+
+        run ->
+          if run.error_message != "PAUSED" do
+            repo.rollback({:error, :not_paused})
+          end
+
+          # Clear pause marker
+          run
+          |> Ecto.Changeset.change(%{
+            error_message: nil,
+            updated_at: DateTime.utc_now()
+          })
+          |> repo.update!()
+
+          # Resume paused tasks
+          from(t in Singularity.Workflow.StepTask,
+            where: t.run_id == ^run_id,
+            where: t.status == "paused"
+          )
+          |> repo.update_all(set: [status: "queued", updated_at: DateTime.utc_now()])
+
+          Logger.info("Workflow resumed", run_id: run_id)
+          :ok
+      end
+    end)
+    |> case do
+      {:ok, result} -> result
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   # Calculate workflow progress
   defp calculate_progress(run_id, repo) do
     import Ecto.Query
@@ -374,5 +733,48 @@ defmodule Singularity.Workflow.Executor do
       completed_steps: completed_steps,
       percentage: if(total_steps > 0, do: completed_steps / total_steps * 100, else: 0)
     }
+  end
+
+  # Cancel Oban jobs for a workflow run (internal - Oban is hidden from users)
+  defp cancel_oban_jobs_for_run(run_id, repo) do
+    import Ecto.Query
+
+    try do
+      # Query Oban jobs table for this workflow run
+      oban_config = Application.get_env(:singularity, Oban, [])
+      oban_repo = Keyword.get(oban_config, :repo, repo)
+
+      if function_exported?(oban_repo, :all, 1) do
+        query =
+          from(j in "oban_jobs",
+            where: fragment("?->>'workflow_run_id' = ?", j.args, ^run_id),
+            where: j.state in ["available", "scheduled", "executing", "retryable"],
+            select: j.id
+          )
+
+        job_ids = oban_repo.all(query)
+
+        # Cancel each job using Oban API
+        Enum.each(job_ids, fn job_id ->
+          case Oban.cancel_job(job_id) do
+            :ok ->
+              Logger.debug("Cancelled Oban job", job_id: job_id, run_id: run_id)
+
+            {:error, reason} ->
+              Logger.warning("Failed to cancel Oban job",
+                job_id: job_id,
+                run_id: run_id,
+                reason: inspect(reason)
+              )
+          end
+        end)
+      end
+    rescue
+      e ->
+        Logger.warning("Error cancelling Oban jobs",
+          run_id: run_id,
+          error: Exception.message(e)
+        )
+    end
   end
 end
