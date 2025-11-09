@@ -3,27 +3,33 @@ defmodule Singularity.Workflow.Execution.Strategy do
   Execution strategy for workflow steps.
 
   Provides different execution modes:
-  - :sync - Execute synchronously in the current process
-  - :oban - Execute via Oban background job
-  - :distributed - Execute via distributed job system
+  - `:sync` - Execute synchronously in the current process
+  - `:distributed` - Execute across multiple nodes using PostgreSQL + pgmq
 
   ## Usage
 
       # Synchronous execution (default)
       Strategy.execute(step_fn, input, %{execution: :sync})
 
-      # Oban background execution
-      Strategy.execute(step_fn, input, %{execution: :oban, queue: :gpu_jobs})
+      # Distributed execution across nodes
+      Strategy.execute(step_fn, input, %{
+        execution: :distributed,
+        resources: [gpu: true],
+        queue: :gpu_workers
+      })
 
-      # Distributed execution
-      Strategy.execute(step_fn, input, %{execution: :distributed, resources: [gpu: true]})
+  ## Implementation Note
+
+  The distributed backend uses PostgreSQL + pgmq for job coordination.
+  Oban is used internally as an implementation detail and is not exposed
+  to library users.
   """
 
   require Logger
-  alias Singularity.Workflow.Execution.{DirectBackend, DistributedBackend, ObanBackend}
+  alias Singularity.Workflow.Execution.{DirectBackend, DistributedBackend}
 
   @type execution_config :: %{
-          execution: :sync | :oban | :distributed,
+          execution: :sync | :distributed,
           resources: keyword(),
           queue: atom() | nil,
           timeout: integer() | nil
@@ -36,7 +42,6 @@ defmodule Singularity.Workflow.Execution.Strategy do
   def execute(step_fn, input, config, context \\ %{}) do
     case config.execution do
       :sync -> DirectBackend.execute(step_fn, input, config, context)
-      :oban -> ObanBackend.execute(step_fn, input, config, context)
       :distributed -> DistributedBackend.execute(step_fn, input, config, context)
       other -> {:error, {:unsupported_execution_mode, other}}
     end
@@ -45,8 +50,7 @@ defmodule Singularity.Workflow.Execution.Strategy do
   @doc """
   Check if an execution mode is available.
   """
-  @spec available?(:sync | :oban | :distributed) :: boolean()
+  @spec available?(:sync | :distributed) :: boolean()
   def available?(:sync), do: true
-  def available?(:oban), do: Code.ensure_loaded?(Oban)
   def available?(:distributed), do: DistributedBackend.available?()
 end
