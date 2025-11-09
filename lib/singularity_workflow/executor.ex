@@ -469,7 +469,8 @@ defmodule Singularity.Workflow.Executor do
       ...>   offset: 40
       ...> )
   """
-  @spec list_workflow_runs(module(), keyword()) :: {:ok, [Singularity.Workflow.WorkflowRun.t()]} | {:error, term()}
+  @spec list_workflow_runs(module(), keyword()) ::
+          {:ok, [Singularity.Workflow.WorkflowRun.t()]} | {:error, term()}
   def list_workflow_runs(repo, filters \\ []) do
     import Ecto.Query
 
