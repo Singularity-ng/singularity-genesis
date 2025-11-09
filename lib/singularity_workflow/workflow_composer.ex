@@ -229,6 +229,8 @@ defmodule Singularity.Workflow.WorkflowComposer do
     with {:ok, workflow} <- create_workflow(task_graph, step_functions, opts),
          {:ok, result} <- execute_workflow(workflow, %{}, true, repo) do
       {:ok, result}
+    else
+      error -> error
     end
   end
 

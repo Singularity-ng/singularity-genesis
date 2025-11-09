@@ -32,8 +32,7 @@
           {Credo.Check.Consistency.TabsOrSpaces, []},
 
           ## Design Checks
-          {Credo.Check.Design.AliasUsage,
-           [priority: :low, exit_status: 0, if_nested_deeper_than: 2, if_called_more_often_than: 3]},
+          {Credo.Check.Design.AliasUsage, false},
           {Credo.Check.Design.TagFIXME, []},
           {Credo.Check.Design.TagTODO, [exit_status: 0]},
 
@@ -49,7 +48,7 @@
           {Credo.Check.Readability.ParenthesesOnZeroArityDefs, []},
           {Credo.Check.Readability.PipeIntoAnonymousFunctions, []},
           {Credo.Check.Readability.PredicateFunctionNames, []},
-          {Credo.Check.Readability.PreferImplicitTry, []},
+          {Credo.Check.Readability.PreferImplicitTry, false},
           {Credo.Check.Readability.RedundantBlankLines, []},
           {Credo.Check.Readability.Semicolons, []},
           {Credo.Check.Readability.SpaceAfterCommas, []},
