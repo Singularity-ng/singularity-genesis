@@ -1,0 +1,33 @@
+# Elixir
+_build/
+deps/
+*.beam
+*.ezs
+erl_crash.dump
+.elixir_ls/
+
+# Test
+cover/
+.coveralls.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.envrc
+
+# OSX
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Direnv
+.direnv
+.envrc.local
