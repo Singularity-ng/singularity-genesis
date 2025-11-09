@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/travis/Singularity-ng/singularity-workflows.svg)](https://travis-ci.org/Singularity-ng/singularity-workflows)
 [![Coverage Status](https://img.shields.io/coveralls/Singularity-ng/singularity-workflows.svg)](https://coveralls.io/github/Singularity-ng/singularity-workflows)
 
-> **📦 This is a library package** - Add it to your Elixir application via Hex.pm as `{:singularity_workflow, "~> 1.0"}`
+> **📦 This is a library package** - Add it to your Elixir application via Hex.pm as `{:singularity_workflow, "~> 0.1"}`
 
 **Production-ready Elixir library for workflow orchestration with database-driven DAG execution.**
 
@@ -51,7 +51,7 @@ Add `singularity_workflow` to your application's dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:singularity_workflow, "~> 1.0.0"}
+    {:singularity_workflow, "~> 0.1.5"}
   ]
 end
 ```
