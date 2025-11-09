@@ -1,22 +1,22 @@
 {
   "timeout": 60,
   "max_attempts": 3,
+  "workflow_slug": "test_get_multidep",
   "steps": [
     {
-      "depends_on": [],
-      "step_slug": "a"
+      "step_slug": "a",
+      "depends_on": []
     },
     {
-      "depends_on": [],
-      "step_slug": "b"
+      "step_slug": "b",
+      "depends_on": []
     },
     {
+      "step_slug": "merge",
       "depends_on": [
-        "b",
-        "a"
-      ],
-      "step_slug": "merge"
+        "a",
+        "b"
+      ]
     }
-  ],
-  "workflow_slug": "test_get_multidep"
+  ]
 }
