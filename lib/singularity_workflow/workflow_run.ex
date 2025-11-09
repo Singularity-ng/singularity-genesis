@@ -34,6 +34,7 @@ defmodule Singularity.Workflow.WorkflowRun do
 
   ## Fields
 
+  - `tenant_id` - Tenant/Organization ID for multi-tenancy (optional, NULL for single-tenant)
   - `workflow_slug` - Workflow module name (e.g., "MyApp.Workflows.ProcessOrder")
   - `status` - Execution status: "started", "completed", "failed"
   - `input` - Input parameters passed to workflow
@@ -88,6 +89,7 @@ defmodule Singularity.Workflow.WorkflowRun do
 
   @type t :: %__MODULE__{
           id: Ecto.UUID.t() | nil,
+          tenant_id: Ecto.UUID.t() | nil,
           workflow_slug: String.t() | nil,
           status: String.t() | nil,
           input: map() | nil,
@@ -105,6 +107,7 @@ defmodule Singularity.Workflow.WorkflowRun do
   @foreign_key_type :binary_id
 
   schema "workflow_runs" do
+    field(:tenant_id, :binary_id)
     field(:workflow_slug, :string)
     field(:status, :string, default: "started")
     field(:input, :map, default: %{})
@@ -148,6 +151,7 @@ defmodule Singularity.Workflow.WorkflowRun do
   def changeset(run, attrs) do
     run
     |> cast(attrs, [
+      :tenant_id,
       :workflow_slug,
       :status,
       :input,
