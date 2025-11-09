@@ -39,7 +39,7 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
           initial_tasks: integer(),
           timeout: integer() | nil,
           max_attempts: integer(),
-          execution: :sync | :oban | :distributed,
+          execution: :sync | :oban,
           resources: keyword(),
           queue: atom() | nil
         }
@@ -337,7 +337,7 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
   Get execution configuration for a step.
   """
   @spec get_step_execution_config(t(), atom()) :: %{
-          execution: :sync | :oban | :distributed,
+          execution: :sync | :oban,
           resources: keyword(),
           queue: atom() | nil,
           timeout: integer() | nil
