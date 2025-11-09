@@ -21,6 +21,8 @@ Singularity.Workflow is a **library** that you add to your Elixir applications t
 - ✅ **Real-time Messaging** - PostgreSQL NOTIFY for instant message delivery (NATS replacement)
 - ✅ **Parallel Execution** - Independent branches run concurrently
 - ✅ **Multi-Instance Scaling** - Horizontal scaling via pgmq + PostgreSQL
+- ✅ **Workflow Lifecycle Management** - Cancel, pause, resume, retry workflows
+- ✅ **Phoenix Integration** - Direct LiveView/Channels integration (no Phoenix.PubSub needed)
 - ✅ **Comprehensive Logging** - Structured logging for all workflow events
 - ✅ **Static & Dynamic Workflows** - Code-based and runtime-generated workflows
 - ✅ **Map Steps** - Variable task counts for bulk processing
@@ -384,6 +386,46 @@ step_functions = %{
 
 For detailed guide, see [HTDAG_ORCHESTRATOR_GUIDE.md](docs/HTDAG_ORCHESTRATOR_GUIDE.md).
 
+## 🔌 Phoenix Integration
+
+Singularity.Workflow integrates directly with Phoenix LiveView and Channels - **no Phoenix.PubSub needed**.
+
+### LiveView Example
+
+```elixir
+defmodule MyAppWeb.WorkflowLive do
+  use MyAppWeb, :live_view
+
+  def mount(_params, _session, socket) do
+    # Listen to workflow events
+    {:ok, listener_pid} = Singularity.Workflow.listen("workflow_events", MyApp.Repo)
+
+    {:ok, assign(socket, :listener_pid, listener_pid)}
+  end
+
+  def handle_info({:notification, _pid, "workflow_events", message_id}, socket) do
+    # Update UI in real-time
+    {:noreply, update_workflow_list(socket, message_id)}
+  end
+
+  def terminate(_reason, socket) do
+    Singularity.Workflow.unlisten(socket.assigns.listener_pid, MyApp.Repo)
+    :ok
+  end
+end
+```
+
+### Why Not Phoenix.PubSub?
+
+| Feature | Singularity.Workflow | Phoenix.PubSub |
+|---------|----------------------|----------------|
+| **Persistence** | PostgreSQL (survives restarts) | Memory only (ephemeral) |
+| **Multi-node** | PostgreSQL coordination | Requires node clustering |
+| **Message History** | Queryable via pgmq | Not available |
+| **Reliability** | ACID guarantees | Best-effort delivery |
+
+For comprehensive Phoenix integration guide, see [API_REFERENCE.md](docs/API_REFERENCE.md#phoenix-integration).
+
 ## 📚 API Reference
 
 ### Singularity.Workflow.Executor
@@ -400,8 +442,36 @@ opts = [
   timeout: 30_000,           # Execution timeout (ms)
   max_retries: 3,            # Retry failed tasks
   parallel: true,            # Enable parallel execution
-  notify_events: true        # Send NOTIFY events
+  notify_events: true,       # Send NOTIFY events
+  execution: :sync           # :sync (local) or :distributed (multi-node)
 ]
+
+# Execution strategies
+execution: :sync         # Execute locally in current process (default)
+execution: :distributed  # Execute across multiple nodes via PostgreSQL + pgmq
+```
+
+### Workflow Lifecycle Management
+
+```elixir
+# Get workflow status
+{:ok, status, metadata} = Singularity.Workflow.get_run_status(run_id, repo)
+# Returns: {:ok, :in_progress, %{total_steps: 5, completed_steps: 2}}
+
+# List all workflows
+{:ok, runs} = Singularity.Workflow.list_workflow_runs(repo, status: "started")
+
+# Pause running workflow
+:ok = Singularity.Workflow.pause_workflow_run(run_id, repo)
+
+# Resume paused workflow
+:ok = Singularity.Workflow.resume_workflow_run(run_id, repo)
+
+# Cancel workflow
+:ok = Singularity.Workflow.cancel_workflow_run(run_id, repo, reason: "User cancelled")
+
+# Retry failed workflow
+{:ok, new_run_id} = Singularity.Workflow.retry_failed_workflow(failed_run_id, repo)
 ```
 
 ### Singularity.Workflow.FlowBuilder
