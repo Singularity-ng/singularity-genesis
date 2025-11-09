@@ -214,7 +214,7 @@ defmodule Singularity.Workflow.DAG.RunInitializer do
   defp ensure_workflow_queue(workflow_slug, repo) do
     result =
       repo.query(
-        "SELECT Singularity.Workflow.ensure_workflow_queue($1)",
+        "SELECT singularity_workflow.ensure_workflow_queue($1)",
         [workflow_slug]
       )
 

@@ -6,34 +6,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.5] - 2025-11-09
+## [0.1.0] - 2025-11-09
 
 ### Added
 
+- **Production-Ready Release** - First stable release of Singularity.Workflow
+- **Database-Driven DAG Execution** - PostgreSQL-based workflow orchestration
 - **Workflow Lifecycle Management** - Complete control over running workflows:
   - `cancel_workflow_run/3` - Cancel running workflows with optional reason
   - `list_workflow_runs/2` - Query workflows with filtering and pagination
   - `retry_failed_workflow/3` - Retry failed workflows from point of failure
-  - `pause_workflow_run/2` - Pause workflow execution (soft pause)
+  - `pause_workflow_run/2` - Pause workflow execution
   - `resume_workflow_run/2` - Resume paused workflows
-  - All functions exposed via main `Singularity.Workflow` module
-  - Oban integration completely hidden from users (internal implementation detail)
+- **HTDAG Orchestration** - Goal-driven workflow decomposition
+- **Real-time Messaging** - PostgreSQL NOTIFY for instant message delivery
+- **Security Hardening** - Safe string-to-atom conversion with validation
+- **Code Quality** - 0 Credo warnings, 100% formatted
 
-- **Comprehensive HTDAG/Orchestrator Documentation** - Previously undocumented goal-driven workflow features now fully documented:
-  - `docs/HTDAG_ORCHESTRATOR_GUIDE.md` - Complete guide to goal decomposition, optimization, and notifications
-  - Updated README.md with HTDAG features overview
-  - Updated GETTING_STARTED.md with HTDAG examples and patterns
-  - Updated ARCHITECTURE.md with Layer 3 HTDAG documentation
+### Core Features
+
+- DAG Workflow Support with explicit dependencies
+- Parallel Execution for independent steps
+- Map Steps for bulk processing
+- Database-First Coordination via PostgreSQL + pgmq
+- Multi-Instance Scaling support
+- Comprehensive test coverage (678 tests)
 
 ### Documentation
 
-- `docs/API_REFERENCE.md` - Comprehensive API reference with Phoenix integration
-- `docs/HTDAG_ORCHESTRATOR_GUIDE.md` - Complete HTDAG orchestration guide
-- Enhanced README.md with HTDAG features and lifecycle management
-- Enhanced GETTING_STARTED.md with goal-driven workflow section
-- Enhanced ARCHITECTURE.md with complete system design
-- Updated main module documentation with lifecycle management examples
-- Cleaned up non-production documentation
+- Complete API reference
+- HTDAG orchestration guide
+- Getting started guide
+- Architecture documentation
+- Phoenix integration examples
 
 ## [1.0.1] - 2025-10-27
 

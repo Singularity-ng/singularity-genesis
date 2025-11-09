@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CondStatements
 defmodule Singularity.Workflow.Orchestrator.ExampleDecomposer do
   @moduledoc """
   Example decomposer implementations for HTDAG.

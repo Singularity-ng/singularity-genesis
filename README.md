@@ -53,7 +53,7 @@ Add `singularity_workflow` to your application's dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:singularity_workflow, "~> 0.1.5"}
+    {:singularity_workflow, "~> 0.1.0"}
   ]
 end
 ```

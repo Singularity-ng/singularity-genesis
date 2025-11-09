@@ -1,7 +1,7 @@
 defmodule Singularity.Workflow.DAG.DynamicWorkflowLoaderTest do
   use ExUnit.Case, async: false
 
-  alias Singularity.Workflow.{Repo, FlowBuilder, DAG.DynamicWorkflowLoader, DAG.WorkflowDefinition}
+  alias Singularity.Workflow.{DAG.DynamicWorkflowLoader, DAG.WorkflowDefinition, FlowBuilder, Repo}
 
   @moduledoc """
   Comprehensive DynamicWorkflowLoader tests covering:

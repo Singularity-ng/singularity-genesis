@@ -1,7 +1,7 @@
 defmodule Singularity.Workflow.FlowBuilderTest do
   use ExUnit.Case, async: false
 
-  alias Singularity.Workflow.{Repo, FlowBuilder}
+  alias Singularity.Workflow.{FlowBuilder, Repo}
 
   @moduledoc """
   Tests for FlowBuilder - Dynamic workflow creation API.
@@ -1158,13 +1158,13 @@ defmodule Singularity.Workflow.FlowBuilderTest do
 
       # Verify workflow is deleted
       {:ok, result} = Repo.query("SELECT * FROM workflows WHERE workflow_slug = 'test_delete'", [])
-      assert length(result.rows) == 0
+      assert result.rows == []
 
       # Verify steps are deleted
       {:ok, result} =
         Repo.query("SELECT * FROM workflow_steps WHERE workflow_slug = 'test_delete'", [])
 
-      assert length(result.rows) == 0
+      assert result.rows == []
 
       # Verify dependencies are deleted
       {:ok, result} =
@@ -1173,7 +1173,7 @@ defmodule Singularity.Workflow.FlowBuilderTest do
           []
         )
 
-      assert length(result.rows) == 0
+      assert result.rows == []
     end
 
     test "deletes workflow with complex dependencies" do
@@ -1189,7 +1189,7 @@ defmodule Singularity.Workflow.FlowBuilderTest do
       {:ok, result} =
         Repo.query("SELECT * FROM workflows WHERE workflow_slug = 'test_delete_complex'", [])
 
-      assert length(result.rows) == 0
+      assert result.rows == []
     end
 
     test "delete is idempotent (deleting non-existent workflow succeeds)" do

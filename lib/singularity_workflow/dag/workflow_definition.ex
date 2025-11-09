@@ -232,17 +232,15 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
     # 4. If any dependency returns {:cycle, path}, propagate it up
     #
     # Performance: O(V + E) where V=steps, E=dependencies (DFS complexity)
-    cond do
-      MapSet.member?(visited, step) ->
-        # Step already visited in this path → cycle detected!
-        # Extract the cycle portion (from step to current position)
-        cycle_start = Enum.find_index(path, &(&1 == step))
-        {:cycle, Enum.drop(path, cycle_start || 0)}
-
-      true ->
-        # Mark as visited and add to current path
-        new_visited = MapSet.put(visited, step)
-        new_path = [step | path]
+    if MapSet.member?(visited, step) do
+      # Step already visited in this path → cycle detected!
+      # Extract the cycle portion (from step to current position)
+      cycle_start = Enum.find_index(path, &(&1 == step))
+      {:cycle, Enum.drop(path, cycle_start || 0)}
+    else
+      # Mark as visited and add to current path
+      new_visited = MapSet.put(visited, step)
+      new_path = [step | path]
 
         # Get dependencies (empty list if step has no dependencies)
         deps = Map.get(dependencies, step, [])

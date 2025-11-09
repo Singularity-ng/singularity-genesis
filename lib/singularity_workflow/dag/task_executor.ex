@@ -228,7 +228,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
       repo.query(
         """
         SELECT *
-        FROM Singularity.Workflow.read_with_poll(
+        FROM singularity_workflow.read_with_poll(
           queue_name => $1::text,
           vt => $2::integer,
           qty => $3::integer,
@@ -471,7 +471,7 @@ defmodule Singularity.Workflow.DAG.TaskExecutor do
     # Set timeout to 15 seconds to prevent transaction deadlock hangs
     result =
       repo.query(
-        "SELECT Singularity.Workflow.fail_task($1::uuid, $2::text, $3::integer, $4::text)",
+        "SELECT singularity_workflow.fail_task($1::uuid, $2::text, $3::integer, $4::text)",
         [run_id, step_slug, task_index, error_message],
         timeout: 15_000
       )
