@@ -373,6 +373,6 @@ mix test --trace --verbose
 
 ## Documentation References
 
-- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Setup instructions
+- **[README](../README.md)** - Installation and setup instructions
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical design
 - **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Production deployment

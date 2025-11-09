@@ -242,19 +242,19 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
       new_visited = MapSet.put(visited, step)
       new_path = [step | path]
 
-        # Get dependencies (empty list if step has no dependencies)
-        deps = Map.get(dependencies, step, [])
+      # Get dependencies (empty list if step has no dependencies)
+      deps = Map.get(dependencies, step, [])
 
-        # Visit each dependency; if any returns a cycle, propagate it
-        # All dependencies checked, no cycle found
-        Enum.find_value(deps, :no_cycle, fn dep ->
-          case dfs_cycle(dep, dependencies, new_visited, new_path) do
-            # Cycle found, propagate
-            {:cycle, _} = result -> result
-            # No cycle in this branch
-            :no_cycle -> nil
-          end
-        end) || :no_cycle
+      # Visit each dependency; if any returns a cycle, propagate it
+      # All dependencies checked, no cycle found
+      Enum.find_value(deps, :no_cycle, fn dep ->
+        case dfs_cycle(dep, dependencies, new_visited, new_path) do
+          # Cycle found, propagate
+          {:cycle, _} = result -> result
+          # No cycle in this branch
+          :no_cycle -> nil
+        end
+      end) || :no_cycle
     end
   end
 

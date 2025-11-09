@@ -853,7 +853,7 @@ See `test/` directory for examples.
 5. **Monitoring**: Check pgmq queue depth, step failure rate
 6. **Backup**: PostgreSQL WAL archiving for durability
 
-See [GETTING_STARTED.md](GETTING_STARTED.md) for deployment steps.
+See the main [README](../README.md) for installation and setup instructions, or [DEPLOYMENT_GUIDE](DEPLOYMENT_GUIDE.md) for production deployment steps.
 
 ## Implementation Details
 
