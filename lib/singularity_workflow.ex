@@ -254,8 +254,8 @@ defmodule Singularity.Workflow do
   ## Examples
 
       iex> Singularity.Workflow.version()
-      "0.1.0"
+      "1.0.2"
   """
   @spec version() :: String.t()
-  def version, do: "0.1.0"
+  def version, do: "1.0.2"
 end

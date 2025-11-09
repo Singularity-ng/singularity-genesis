@@ -1,15 +1,19 @@
-# Singularity.Workflow (Hex package: singularity_workflow)
+# Singularity.Workflow
 
 [![Hex.pm](https://img.shields.io/hexpm/v/singularity_workflow.svg)](https://hex.pm/packages/singularity_workflow)
 [![Hex.pm](https://img.shields.io/hexpm/dt/singularity_workflow.svg)](https://hex.pm/packages/singularity_workflow)
 [![Build Status](https://img.shields.io/travis/Singularity-ng/singularity-workflows.svg)](https://travis-ci.org/Singularity-ng/singularity-workflows)
 [![Coverage Status](https://img.shields.io/coveralls/Singularity-ng/singularity-workflows.svg)](https://coveralls.io/github/Singularity-ng/singularity-workflows)
 
-**Elixir implementation of workflow orchestration with database-driven DAG execution and 100% feature parity.**
+> **📦 This is a library package** - Add it to your Elixir application via Hex.pm as `{:singularity_workflow, "~> 1.0"}`
 
-Singularity.Workflow provides reliable, scalable workflow execution using PostgreSQL + pgmq extension with real-time notifications via PostgreSQL NOTIFY.
+**Production-ready Elixir library for workflow orchestration with database-driven DAG execution.**
 
-> **Source:** This package is the Elixir implementation of workflow orchestration concepts, part of the Singularity-ng organization's workflow management suite. It provides database-driven DAG execution with PostgreSQL and pgmq integration.
+Singularity.Workflow is a **library** that you add to your Elixir applications to provide reliable, scalable workflow execution using PostgreSQL + pgmq extension with real-time notifications via PostgreSQL NOTIFY.
+
+## What is this?
+
+**This is a library, not a standalone application.** You integrate it into your existing Elixir/Phoenix applications to add workflow orchestration capabilities. Think of it like `Ecto` or `Oban` - a dependency you add to your `mix.exs` to gain powerful workflow features.
 
 ## 🚀 Features
 
@@ -42,7 +46,7 @@ Singularity.Workflow provides reliable, scalable workflow execution using Postgr
 
 ### Installation
 
-Add to your `mix.exs`:
+Add `singularity_workflow` to your application's dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -52,25 +56,38 @@ def deps do
 end
 ```
 
-### Setup
+Run:
+```bash
+mix deps.get
+```
+
+### Setup Your Application
 
 1. **Install PostgreSQL with pgmq extension:**
 ```bash
-# Install pgmq extension
-psql -d your_database -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
+# Install pgmq extension in YOUR database
+psql -d your_app_database -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
 ```
 
-2. **Run migrations:**
-```bash
-mix ecto.migrate
+2. **Configure your application's repo:**
+```elixir
+# config/config.exs
+config :my_app, MyApp.Repo,
+  database: "my_app_dev",
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost"
+
+config :my_app,
+  ecto_repos: [MyApp.Repo]
 ```
 
 3. **Start your application:**
 ```elixir
-# In your application.ex
+# lib/my_app/application.ex
 def start(_type, _args) do
   children = [
-    YourApp.Repo,
+    MyApp.Repo,  # Your repo - Singularity.Workflow uses it
     # ... other children
   ]
   Supervisor.start_link(children, strategy: :one_for_one)
@@ -491,78 +508,81 @@ Check the `examples/` directory for comprehensive examples:
 - **`ai_workflow_generation.ex`** - LLM-generated workflows
 - **`microservices_coordination.ex`** - Multi-service workflows
 
-## 📦 Deployment
+## 📦 Deploying Applications That Use This Library
 
-### Production Configuration
+> **Note**: These examples show how to deploy **your application** that uses the Singularity.Workflow library. This library itself doesn't need deployment - you add it as a dependency.
+
+### Production Configuration in Your App
 
 ```elixir
-# config/prod.exs
-config :singularity_workflow,
-  repo: MyApp.Repo,
-  pgmq_url: System.get_env("DATABASE_URL"),
-  notification_channels: ["workflow_events", "task_events"],
-  max_retries: 3,
-  default_timeout: 30_000
+# config/prod.exs in YOUR application
+config :my_app, MyApp.Repo,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+
+# Your application uses Singularity.Workflow as a library
+# No special configuration needed - just use your repo
 ```
 
-### Docker Support
+### Docker Example (Your Application)
 
 ```dockerfile
-# Dockerfile
-FROM elixir:1.15-alpine
+# Dockerfile for YOUR application
+FROM elixir:1.19-alpine
 
 WORKDIR /app
-COPY . .
+COPY mix.exs mix.lock ./
+COPY config config
+COPY lib lib
+COPY priv priv
+
+# Singularity.Workflow will be fetched as a dependency
 RUN mix deps.get && mix compile
 
 CMD ["mix", "phx.server"]
 ```
 
-### Kubernetes Deployment
+### Kubernetes Example (Your Application)
 
 ```yaml
-# k8s/deployment.yaml
+# k8s/deployment.yaml for YOUR application
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: singularity-workflow-app
+  name: my-app
 spec:
   replicas: 3
-  selector:
-    matchLabels:
-      app: singularity-workflow-app
   template:
-    metadata:
-      labels:
-        app: singularity-workflow-app
     spec:
       containers:
-      - name: singularity-workflow
-        image: singularity-workflow:latest
+      - name: my-app
+        image: my-app:latest  # Your app, which depends on singularity_workflow
         env:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: singularity-workflow-secrets
+              name: my-app-secrets
               key: database-url
 ```
 
 ## 🤝 Contributing
 
+Want to contribute to the Singularity.Workflow **library**? Here's how to set up the development environment:
+
 ### Development Setup
 
 ```bash
-# Clone repository
+# Clone the library repository
 git clone https://github.com/Singularity-ng/singularity-workflows.git
 cd singularity-workflows
 
 # Install dependencies
 mix deps.get
 
-# Setup database
+# Setup test database (for library development/testing)
 mix ecto.setup
 
-# Run tests
+# Run library tests
 mix test
 ```
 
