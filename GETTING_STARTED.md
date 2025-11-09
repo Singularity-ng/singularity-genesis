@@ -1,15 +1,18 @@
 # Getting Started with Singularity.Workflow
 
-Singularity.Workflow is an Elixir implementation of [Singularity.Workflow](https://github.com/singularity_workflow-dev/Singularity.Workflow), a database-driven DAG execution engine. This guide walks you through installation, basic setup, and running your first workflow.
+> **📦 This is a library** - You add it to your Elixir application as a dependency, just like Ecto or Oban.
+
+Singularity.Workflow is a **library package** that provides database-driven workflow orchestration for your Elixir applications. This guide walks you through adding it to your application, basic setup, and running your first workflow.
 
 ## Installation
 
-Add `singularity_workflow` to your `mix.exs` dependencies:
+Add `singularity_workflow` to **your application's** `mix.exs` dependencies:
 
 ```elixir
+# In YOUR application's mix.exs
 def deps do
   [
-    {:singularity_workflow, "~> 0.1.0"}
+    {:singularity_workflow, "~> 1.0.0"}
   ]
 end
 ```
@@ -20,51 +23,52 @@ Then run:
 mix deps.get
 ```
 
-## Database Setup
+**Important**: This installs the library into your application. You don't run Singularity.Workflow as a standalone service - it's code you use within your app.
 
-Singularity.Workflow requires PostgreSQL 14+ with the `pgmq` extension:
+## Database Setup in Your Application
 
-### 1. Create a PostgreSQL Database
+Singularity.Workflow uses **your application's database** and requires PostgreSQL 12+ with the `pgmq` extension.
+
+### 1. Your Database (if you don't have one)
 
 ```bash
-createdb my_app
+# Create your application's database
+createdb my_app_dev
 ```
 
-### 2. Add Singularity.Workflow Repository
+### 2. Configure Your Application's Repo
 
-Configure Ecto in your app to include the Singularity.Workflow.Repo:
+Singularity.Workflow uses **your existing Ecto repo** - no separate repo needed:
 
 ```elixir
-# config/config.exs
-config :my_app, Singularity.Workflow.Repo,
-  database: "my_app",
+# config/config.exs in YOUR application
+config :my_app, MyApp.Repo,
+  database: "my_app_dev",
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
-  port: 5432
+  hostname: "localhost"
+
+config :my_app,
+  ecto_repos: [MyApp.Repo]
 ```
 
 ### 3. Install pgmq Extension
 
 ```bash
-# Install pgmq from PGXN
-pgxn install pgmq
-
-# Or via PostgreSQL:
-psql my_app -c "CREATE EXTENSION IF NOT EXISTS pgmq"
+# Install pgmq extension in YOUR database
+psql my_app_dev -c "CREATE EXTENSION IF NOT EXISTS pgmq"
 ```
 
-### 4. Run Migrations
+### 4. Run Migrations (Optional)
+
+The library includes migrations for workflow tables. You can copy them to your app if needed:
 
 ```bash
-# Generate migrations for Singularity.Workflow tables
-mix ecto.gen.migration init_singularity_workflow
-
-# Run all migrations
-mix ecto.migrate
+# Singularity.Workflow tables will be created automatically
+# when you execute workflows using your repo
 ```
 
-The migration will create:
+The library manages these tables:
 - `workflow_runs` - Tracks workflow execution instances
 - `workflow_step_states` - State for each step in a run
 - `workflow_step_tasks` - Individual tasks for map steps
@@ -73,31 +77,20 @@ The migration will create:
 
 ## Your First Workflow
 
-### 1. Define a Workflow
+### 1. Define a Workflow in Your Application
 
-Create a workflow module that implements `Singularity.Workflow.Executor.Workflow`:
+Create a workflow module in your application that uses the library:
 
 ```elixir
+# In YOUR application: lib/my_app/workflows/hello_world.ex
 defmodule MyApp.Workflows.HelloWorld do
-  @behaviour Singularity.Workflow.Executor.Workflow
-
-  @impl true
-  def definition do
-    %{
-      "version" => "1.0",
-      "title" => "Hello World",
-      "steps" => [
-        %{
-          "name" => "greet",
-          "type" => "task",
-          "command" => "greeting"
-        }
-      ]
-    }
+  def __workflow_steps__ do
+    [
+      {:greet, &__MODULE__.greet/1, depends_on: []}
+    ]
   end
 
-  @impl true
-  def execute_command(run_id, "greeting", _input, _context) do
+  def greet(_input) do
     {:ok, %{"message" => "Hello, World!"}}
   end
 
@@ -458,8 +451,8 @@ mix dialyzer
 
 - Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) for internal design details
 - Check [DYNAMIC_WORKFLOWS_GUIDE.md](docs/DYNAMIC_WORKFLOWS_GUIDE.md) for advanced patterns
-- See [SINGULARITY_WORKFLOW_REFERENCE.md](docs/SINGULARITY_WORKFLOW_REFERENCE.md) for complete API documentation
-- Review [SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md) for security considerations
+- See [API_REFERENCE.md](docs/API_REFERENCE.md) for complete API documentation
+- Review [SECURITY.md](SECURITY.md) for security policy and best practices
 
 ## Contributing
 

@@ -155,6 +155,45 @@ defmodule Singularity.Workflow do
         ]
       end
 
+  ## Workflow Lifecycle Management
+
+  Control running workflows with lifecycle management functions:
+
+  ```elixir
+  # Start a workflow
+  {:ok, result, run_id} = Singularity.Workflow.Executor.execute(
+    MyWorkflow,
+    %{user_id: 123},
+    MyApp.Repo
+  )
+
+  # Check status
+  {:ok, :in_progress, %{total_steps: 5, completed_steps: 2}} =
+    Singularity.Workflow.get_run_status(run_id, MyApp.Repo)
+
+  # List all running workflows
+  {:ok, runs} = Singularity.Workflow.list_workflow_runs(MyApp.Repo, status: "started")
+
+  # Pause execution
+  :ok = Singularity.Workflow.pause_workflow_run(run_id, MyApp.Repo)
+
+  # Resume execution
+  :ok = Singularity.Workflow.resume_workflow_run(run_id, MyApp.Repo)
+
+  # Cancel workflow
+  :ok = Singularity.Workflow.cancel_workflow_run(
+    run_id,
+    MyApp.Repo,
+    reason: "User requested cancellation"
+  )
+
+  # Retry failed workflow
+  {:ok, new_run_id} = Singularity.Workflow.retry_failed_workflow(
+    failed_run_id,
+    MyApp.Repo
+  )
+  ```
+
   ## Requirements
 
   - **PostgreSQL 12+**
@@ -164,26 +203,26 @@ defmodule Singularity.Workflow do
   See `Singularity.Workflow.Executor` for execution options and `Singularity.Workflow.DAG.WorkflowDefinition`
   for workflow syntax details.
 
-  ## Real-time Notifications
+  ## Real-time Messaging
 
-  singularity_workflow includes `Singularity.Workflow.Notifications` for real-time workflow events with comprehensive logging:
+  singularity_workflow provides complete messaging infrastructure via PostgreSQL NOTIFY (NATS replacement):
 
-      # Send workflow event with NOTIFY
+      # Send workflow message with NOTIFY
       {:ok, message_id} = Singularity.Workflow.Notifications.send_with_notify(
-        "workflow_events", 
-        %{type: "task_completed", task_id: "123"}, 
+        "workflow_events",
+        %{type: "task_completed", task_id: "123"},
         MyApp.Repo
       )
 
-      # Listen for real-time workflow events
+      # Listen for real-time workflow messages
       {:ok, pid} = Singularity.Workflow.Notifications.listen("workflow_events", MyApp.Repo)
-      
-      # All NOTIFY events are automatically logged with structured data:
-      # - Queue names, message IDs, timing, message types
+
+      # All messages are automatically logged with structured data:
+      # - Channel names, message IDs, timing, message types
       # - Success/error logging with context
       # - Performance metrics and debugging information
 
-  ### Notification Types
+  ### Message Types
 
   | Event Type | Description | Payload |
   |------------|-------------|---------|
@@ -243,10 +282,19 @@ defmodule Singularity.Workflow do
       )
   """
 
+  # Messaging functions (PostgreSQL NOTIFY - NATS replacement)
   defdelegate send_with_notify(queue, message, repo), to: Singularity.Workflow.Notifications
   defdelegate listen(queue, repo), to: Singularity.Workflow.Notifications
   defdelegate unlisten(listener_pid, repo), to: Singularity.Workflow.Notifications
   defdelegate notify_only(channel, payload, repo), to: Singularity.Workflow.Notifications
+
+  # Workflow lifecycle management functions
+  defdelegate cancel_workflow_run(run_id, repo, opts \\ []), to: Singularity.Workflow.Executor
+  defdelegate list_workflow_runs(repo, filters \\ []), to: Singularity.Workflow.Executor
+  defdelegate retry_failed_workflow(run_id, repo, opts \\ []), to: Singularity.Workflow.Executor
+  defdelegate pause_workflow_run(run_id, repo), to: Singularity.Workflow.Executor
+  defdelegate resume_workflow_run(run_id, repo), to: Singularity.Workflow.Executor
+  defdelegate get_run_status(run_id, repo), to: Singularity.Workflow.Executor
 
   @doc """
   Returns the current version of singularity_workflow.
@@ -254,8 +302,8 @@ defmodule Singularity.Workflow do
   ## Examples
 
       iex> Singularity.Workflow.version()
-      "0.1.0"
+      "0.1.5"
   """
   @spec version() :: String.t()
-  def version, do: "0.1.0"
+  def version, do: "0.1.5"
 end

@@ -107,7 +107,7 @@ Singularity.Workflow is designed for workflow orchestration in trusted environme
 
 ## Security Audit
 
-Singularity.Workflow has been reviewed for common vulnerabilities. See [SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md) for detailed findings.
+Singularity.Workflow follows security best practices and is regularly reviewed for common vulnerabilities.
 
 ## Dependencies
 

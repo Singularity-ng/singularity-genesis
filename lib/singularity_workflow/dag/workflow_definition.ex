@@ -39,7 +39,7 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
           initial_tasks: integer(),
           timeout: integer() | nil,
           max_attempts: integer(),
-          execution: :sync | :oban | :distributed,
+          execution: :local | :distributed,
           resources: keyword(),
           queue: atom() | nil
         }
@@ -131,7 +131,7 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
             initial_tasks = Keyword.get(opts, :initial_tasks, 1)
             timeout = Keyword.get(opts, :timeout)
             max_attempts = Keyword.get(opts, :max_attempts, 3)
-            execution = Keyword.get(opts, :execution, :sync)
+            execution = Keyword.get(opts, :execution, :local)
             resources = Keyword.get(opts, :resources, [])
             queue = Keyword.get(opts, :queue)
 
@@ -159,7 +159,7 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
               initial_tasks: 1,
               timeout: nil,
               max_attempts: 3,
-              execution: :sync,
+              execution: :local,
               resources: [],
               queue: nil
             }
@@ -327,7 +327,7 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
       initial_tasks: 1,
       timeout: nil,
       max_attempts: 3,
-      execution: :sync,
+      execution: :local,
       resources: [],
       queue: nil
     })
@@ -337,7 +337,7 @@ defmodule Singularity.Workflow.DAG.WorkflowDefinition do
   Get execution configuration for a step.
   """
   @spec get_step_execution_config(t(), atom()) :: %{
-          execution: :sync | :oban | :distributed,
+          execution: :local | :distributed,
           resources: keyword(),
           queue: atom() | nil,
           timeout: integer() | nil

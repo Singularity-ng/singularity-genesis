@@ -6,7 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2025-11-09
+
 ### Added
+
+- **Workflow Lifecycle Management** - Complete control over running workflows:
+  - `cancel_workflow_run/3` - Cancel running workflows with optional reason
+  - `list_workflow_runs/2` - Query workflows with filtering and pagination
+  - `retry_failed_workflow/3` - Retry failed workflows from point of failure
+  - `pause_workflow_run/2` - Pause workflow execution (soft pause)
+  - `resume_workflow_run/2` - Resume paused workflows
+  - All functions exposed via main `Singularity.Workflow` module
+  - Oban integration completely hidden from users (internal implementation detail)
 
 - **Comprehensive HTDAG/Orchestrator Documentation** - Previously undocumented goal-driven workflow features now fully documented:
   - `docs/HTDAG_ORCHESTRATOR_GUIDE.md` - Complete guide to goal decomposition, optimization, and notifications
@@ -16,10 +27,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- `docs/HTDAG_ORCHESTRATOR_GUIDE.md` - Complete HTDAG orchestration guide with examples
-- Enhanced README.md with HTDAG feature descriptions
+- `docs/API_REFERENCE.md` - Comprehensive API reference with Phoenix integration
+- `docs/HTDAG_ORCHESTRATOR_GUIDE.md` - Complete HTDAG orchestration guide
+- Enhanced README.md with HTDAG features and lifecycle management
 - Enhanced GETTING_STARTED.md with goal-driven workflow section
-- Enhanced ARCHITECTURE.md with Layer 3 documentation
+- Enhanced ARCHITECTURE.md with complete system design
+- Updated main module documentation with lifecycle management examples
+- Cleaned up non-production documentation
 
 ## [1.0.1] - 2025-10-27
 
@@ -71,9 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GETTING_STARTED.md` - Installation and first workflow tutorial
 - `docs/ARCHITECTURE.md` - Technical deep dive into internal design
 - `CONTRIBUTING.md` - Development guidelines and workflow
-- `docs/SINGULARITY_WORKFLOW_REFERENCE.md` - Complete API reference
+- `docs/API_REFERENCE.md` - Complete API reference
 - `docs/DYNAMIC_WORKFLOWS_GUIDE.md` - Advanced workflow patterns
-- `docs/SECURITY_AUDIT.md` - Security analysis and best practices
+- Security best practices documented in SECURITY.md
 
 ### Development Tools
 

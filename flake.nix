@@ -81,10 +81,10 @@
               fi
 
               # Create database and install extensions if they don't exist
-              if ! psql -lqt | cut -d \| -f 1 | grep -qw quantum_flow; then
-                echo "Creating quantum_flow database..."
-                createdb -p 5432 quantum_flow
-                psql -p 5432 -d quantum_flow -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
+              if ! psql -lqt | cut -d \| -f 1 | grep -qw singularity_workflow; then
+                echo "Creating singularity_workflow database..."
+                createdb -p 5432 singularity_workflow
+                psql -p 5432 -d singularity_workflow -c "CREATE EXTENSION IF NOT EXISTS pgmq;"
                 echo "Database and extensions ready"
               else
                 echo "Database already exists"
@@ -95,8 +95,8 @@
               echo "PostgreSQL already running"
             fi
 
-            echo "quantum_flow development environment ready!"
-            echo "Database: quantum_flow on localhost:5432 with pgmq extension"
+            echo "singularity_workflow development environment ready!"
+            echo "Database: singularity_workflow on localhost:5432 with pgmq extension"
             echo "Run 'mix test' to run tests"
             echo "PostgreSQL will auto-stop when you exit this shell"
           '';

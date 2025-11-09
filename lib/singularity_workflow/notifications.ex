@@ -21,23 +21,25 @@ end
 
 defmodule Singularity.Workflow.Notifications do
   @moduledoc """
-  PostgreSQL NOTIFY integration for PGMQ flows.
+  PostgreSQL NOTIFY messaging infrastructure (NATS replacement).
 
-  Provides real-time notification capabilities for PGMQ-based workflows.
-  This enables instant delivery of workflow events without constant polling.
+  Provides complete real-time messaging capabilities for distributed systems.
+  This enables instant message delivery without constant polling, replacing
+  external messaging systems like NATS with PostgreSQL-native messaging.
 
   ## How it works
 
-  1. **Send with NOTIFY**: `send_with_notify/3` sends to PGMQ + triggers NOTIFY
-  2. **Listen for events**: `listen/2` subscribes to PostgreSQL NOTIFY events
-  3. **Process notifications**: Handle NOTIFY events to trigger workflow processing
+  1. **Send messages**: `send_with_notify/3` sends to pgmq + triggers NOTIFY
+  2. **Listen for messages**: `listen/2` subscribes to PostgreSQL NOTIFY channels
+  3. **Process messages**: Handle NOTIFY messages to trigger workflow processing
 
   ## Benefits
 
-  - ✅ **Real-time**: Instant notification when messages arrive
-  - ✅ **Efficient**: No constant polling, only when events occur
+  - ✅ **Real-time**: Instant message delivery when events occur
+  - ✅ **Efficient**: No constant polling, event-driven messaging
   - ✅ **Reliable**: Built on PostgreSQL's proven NOTIFY system
-  - ✅ **Logged**: All NOTIFY events are properly logged for debugging
+  - ✅ **Logged**: All messages are properly logged for debugging
+  - ✅ **NATS replacement**: No external message brokers needed
 
   ## Example
 

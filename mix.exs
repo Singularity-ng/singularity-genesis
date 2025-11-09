@@ -4,7 +4,7 @@ defmodule Singularity.Workflow.MixProject do
   def project do
     [
       app: :singularity_workflow,
-      version: "1.0.2",
+      version: "0.1.5",
       elixir: ">= 1.19.0-rc.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
